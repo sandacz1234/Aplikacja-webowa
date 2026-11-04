@@ -688,9 +688,9 @@ function showTestSetup() {
   $('#test-mode-full').checked = true;
   $('#test-mode-missing').checked = true;
   $('#test-mode-reverse').checked = true;
-  $('#test-mode-hint').textContent = uniqueAnswers.length < 4
-    ? 'Tryby A–D i prawda/fałsz wymagają odpowiednio 4 i 2 różnych tłumaczeń w talii.'
-    : 'Zaznacz wybrane rodzaje — pytania zostaną losowo wymieszane.';
+  $('#test-mode-hint').textContent = `Każda zaznaczona forma pojawi się co najmniej raz. Gdy form jest więcej niż wybranych fiszek, niektóre fiszki powtórzą się.${uniqueAnswers.length < 4
+    ? ' Tryby A–D i prawda/fałsz wymagają odpowiednio 4 i 2 różnych tłumaczeń w talii.'
+    : ''}`;
   $('#start-test').disabled = deck.cards.length === 0;
   $('#start-test').style.opacity = deck.cards.length ? '1' : '.55';
   $('#test-setup').classList.remove('hidden');
@@ -754,10 +754,13 @@ function startTest() {
   }
 
   const count = useAll ? deck.cards.length : requestedCount;
-  const questionModes = Array.from({ length: count }, (_, index) => modes[index % modes.length]);
+  const selectedCards = shuffle([...deck.cards]).slice(0, count);
+  const questionCount = Math.max(count, modes.length);
+  const questionModes = Array.from({ length: questionCount }, (_, index) => modes[index % modes.length]);
   shuffle(questionModes);
-  testQuestions = shuffle([...deck.cards]).slice(0, count).map((card) => {
-    const mode = questionModes.pop();
+  testQuestions = Array.from({ length: questionCount }, (_, index) => {
+    const card = selectedCards[index % selectedCards.length];
+    const mode = questionModes[index];
     const expectedAnswer = mode === 'reverse' ? card.front : card.back;
     const clue = mode === 'missing' ? createLetterClue(expectedAnswer) : null;
     const question = {
