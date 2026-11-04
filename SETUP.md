@@ -7,7 +7,8 @@ Aplikacja używa Supabase do logowania i przechowywania osobnych talii każdego 
 1. Utwórz projekt w [Supabase](https://supabase.com/).
 2. W SQL Editorze projektu uruchom zawartość pliku `supabase/schema.sql`. Włącza on RLS i ogranicza dostęp do rekordów właściciela.
 3. W ustawieniach API skopiuj adres projektu oraz klucz publiczny `anon`/`publishable`. **Nie umieszczaj klucza `service_role` w aplikacji.**
-4. W repozytorium GitHub dodaj zmienne Actions `SUPABASE_URL` i `SUPABASE_ANON_KEY`, a następnie wypchnij zmiany na `main` lub `master`. Workflow automatycznie włączy GitHub Pages i opublikuje stronę. Bez tych zmiennych każdy może otworzyć publiczną stronę, ale logowanie i tworzenie kont pozostaną wyłączone do czasu konfiguracji Supabase.
+4. W repozytorium GitHub włącz **Settings → Pages → Build and deployment → Source: GitHub Actions**. To jednorazowe ustawienie właściciela repozytorium.
+5. Aby włączyć logowanie i konta, dodaj zmienne Actions `SUPABASE_URL` i `SUPABASE_ANON_KEY`, a następnie wypchnij zmiany na `main` lub `master`. Bez zmiennych każdy może otworzyć publiczną stronę, ale logowanie i tworzenie kont pozostaną wyłączone do czasu konfiguracji Supabase.
 5. W ustawieniach Supabase Auth → URL Configuration dodaj publiczny adres GitHub Pages. Jeżeli włączyłeś potwierdzanie e-maili, użytkownicy potwierdzą konto przed pierwszym logowaniem.
 
 Adres Supabase i klucz publiczny są częścią publicznej konfiguracji strony — jest to oczekiwane dla aplikacji przeglądarkowej. Nie są kluczami administracyjnymi; prywatność danych zapewniają polityki RLS uruchamiane przez skrypt SQL.
