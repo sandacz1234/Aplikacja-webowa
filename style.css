@@ -180,6 +180,12 @@ h2 { font-size: 21px; letter-spacing: -.7px; margin: 0; }
 .test-clue-wrap { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 12px; margin-bottom: 15px; border-radius: 8px; background: #f5f8f5; }
 .test-clue-wrap span { color: #929a95; font-size: 9px; }
 .test-clue-wrap strong { color: #527b65; font: 600 18px/1.5 Manrope,sans-serif; letter-spacing: 3px; overflow-wrap: anywhere; text-align: center; white-space: pre-wrap; }
+.test-choice-wrap { border: 0; padding: 0; margin: 0 0 12px; }
+.test-choice-wrap legend { color: #657069; font-size: 10px; font-weight: 600; margin-bottom: 7px; }
+.test-choice-options { display: grid; gap: 7px; }
+.test-choice-option { display: flex; align-items: center; gap: 9px; padding: 10px 12px; border: 1px solid #e4e9e4; border-radius: 7px; color: #59645d; font-size: 11px; cursor: pointer; }
+.test-choice-option:has(input:checked) { border-color: #83ad98; background: #f3f8f4; }
+.test-choice-option input { accent-color: var(--green); }
 #test-answer-form > label { display: block; font-size: 10px; color: #657069; font-weight: 600; margin-bottom: 7px; }
 #test-answer { width: 100%; padding: 11px; border: 1px solid #e4e9e4; border-radius: 7px; outline: none; font-size: 12px; }
 #check-test-answer { width: 100%; margin-top: 11px; }

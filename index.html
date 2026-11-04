@@ -165,7 +165,10 @@
             <legend>Jak mają wyglądać pytania?</legend>
             <label><input id="test-mode-full" type="checkbox" checked> Wpisz całe słówko</label>
             <label><input id="test-mode-missing" type="checkbox" checked> Uzupełnij brakujące litery</label>
-            <p>Możesz zaznaczyć oba rodzaje — będą losowo wymieszane.</p>
+            <label><input id="test-mode-multiple" type="checkbox" checked> Wybierz odpowiedź A–D</label>
+            <label><input id="test-mode-true-false" type="checkbox" checked> Prawda czy fałsz?</label>
+            <label><input id="test-mode-reverse" type="checkbox" checked> Odwróć kierunek tłumaczenia</label>
+            <p id="test-mode-hint">Zaznacz wybrane rodzaje — pytania zostaną losowo wymieszane.</p>
           </fieldset>
           <button class="button button-primary" id="start-test">Rozpocznij sprawdzian <span>→</span></button>
           <p class="study-tip">Pytania i rodzaje zadań zostaną wylosowane.</p>
@@ -179,7 +182,11 @@
             <p class="test-prompt" id="test-prompt"></p>
             <div id="test-clue-wrap" class="test-clue-wrap hidden"><span>Podpowiedź — odkryte litery</span><strong id="test-clue"></strong></div>
             <form id="test-answer-form">
-              <label for="test-answer">Twoja odpowiedź</label>
+              <fieldset id="test-choice-wrap" class="test-choice-wrap hidden">
+                <legend id="test-choice-legend">Wybierz odpowiedź</legend>
+                <div id="test-choice-options"></div>
+              </fieldset>
+              <label id="test-answer-label" for="test-answer">Twoja odpowiedź</label>
               <input id="test-answer" type="text" autocomplete="off" spellcheck="false" placeholder="Wpisz odpowiedź…" required>
               <button class="button button-primary" id="check-test-answer" type="submit">Sprawdź odpowiedź</button>
             </form>

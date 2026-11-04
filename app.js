@@ -678,8 +678,19 @@ function showTestSetup() {
   $('#test-question-count').disabled = deck.cards.length === 0;
   $('#test-all-cards').checked = false;
   $('#test-all-cards').disabled = deck.cards.length === 0;
+  const uniqueAnswers = getUniqueAnswers(deck);
+  const multipleChoice = $('#test-mode-multiple');
+  multipleChoice.disabled = uniqueAnswers.length < 4;
+  multipleChoice.checked = !multipleChoice.disabled;
+  const trueFalse = $('#test-mode-true-false');
+  trueFalse.disabled = uniqueAnswers.length < 2;
+  trueFalse.checked = !trueFalse.disabled;
   $('#test-mode-full').checked = true;
   $('#test-mode-missing').checked = true;
+  $('#test-mode-reverse').checked = true;
+  $('#test-mode-hint').textContent = uniqueAnswers.length < 4
+    ? 'Tryby A–D i prawda/fałsz wymagają odpowiednio 4 i 2 różnych tłumaczeń w talii.'
+    : 'Zaznacz wybrane rodzaje — pytania zostaną losowo wymieszane.';
   $('#start-test').disabled = deck.cards.length === 0;
   $('#start-test').style.opacity = deck.cards.length ? '1' : '.55';
   $('#test-setup').classList.remove('hidden');
@@ -694,6 +705,10 @@ function shuffle(items) {
     [items[index], items[otherIndex]] = [items[otherIndex], items[index]];
   }
   return items;
+}
+
+function getUniqueAnswers(deck) {
+  return [...new Map(deck.cards.map((card) => [normalizeAnswer(card.back), card.back])).values()];
 }
 
 function createLetterClue(answer) {
@@ -730,6 +745,9 @@ function startTest() {
   const modes = [];
   if ($('#test-mode-full').checked) modes.push('full');
   if ($('#test-mode-missing').checked) modes.push('missing');
+  if ($('#test-mode-multiple').checked && !$('#test-mode-multiple').disabled) modes.push('multiple');
+  if ($('#test-mode-true-false').checked && !$('#test-mode-true-false').disabled) modes.push('true-false');
+  if ($('#test-mode-reverse').checked) modes.push('reverse');
   if (!modes.length) {
     showToast('Wybierz przynajmniej jeden rodzaj pytania.');
     return;
@@ -740,15 +758,34 @@ function startTest() {
   shuffle(questionModes);
   testQuestions = shuffle([...deck.cards]).slice(0, count).map((card) => {
     const mode = questionModes.pop();
-    const clue = mode === 'missing' ? createLetterClue(card.back) : null;
-    return {
+    const expectedAnswer = mode === 'reverse' ? card.front : card.back;
+    const clue = mode === 'missing' ? createLetterClue(expectedAnswer) : null;
+    const question = {
       card,
       mode,
+      expectedAnswer,
       clue: clue ? clue.clue : '',
       missing: clue ? clue.missing : '',
+      options: [],
+      proposedAnswer: '',
       answer: '',
       correct: false
     };
+    if (mode === 'multiple') {
+      const distractors = getUniqueAnswers(deck)
+        .filter((answer) => normalizeAnswer(answer) !== normalizeAnswer(expectedAnswer));
+      question.options = shuffle([expectedAnswer, ...distractors].slice(0, 4));
+    } else if (mode === 'true-false') {
+      const isTrue = Math.random() < 0.5;
+      const alternatives = getUniqueAnswers(deck)
+        .filter((answer) => normalizeAnswer(answer) !== normalizeAnswer(expectedAnswer));
+      question.proposedAnswer = isTrue
+        ? expectedAnswer
+        : alternatives[Math.floor(Math.random() * alternatives.length)];
+      question.options = ['Prawda', 'Fałsz'];
+      question.expectedAnswer = isTrue ? 'Prawda' : 'Fałsz';
+    }
+    return question;
   });
   testIndex = 0;
   $('#test-setup').classList.add('hidden');
@@ -763,13 +800,53 @@ function renderTestQuestion() {
   if (!question) return;
   $('#test-counter').textContent = `${testIndex + 1} / ${testQuestions.length}`;
   $('#test-progress').style.width = `${((testIndex + 1) / testQuestions.length) * 100}%`;
-  $('#test-question-label').textContent = question.mode === 'missing' ? 'UZUPEŁNIJ BRAKUJĄCE LITERY' : 'WPISZ CAŁE SŁÓWKO';
+  const labels = {
+    full: 'WPISZ CAŁE SŁÓWKO',
+    missing: 'UZUPEŁNIJ BRAKUJĄCE LITERY',
+    multiple: 'WYBIERZ ODPOWIEDŹ A–D',
+    'true-false': 'PRAWDA CZY FAŁSZ?',
+    reverse: 'ODWRÓĆ KIERUNEK TŁUMACZENIA'
+  };
+  $('#test-question-label').textContent = labels[question.mode];
   $('.test-prompt-label').textContent = question.mode === 'missing'
     ? 'Podaj odpowiedź na podstawie podpowiedzi:'
-    : 'Przetłumacz lub podaj odpowiedź:';
-  $('#test-prompt').textContent = question.card.front;
+    : question.mode === 'true-false'
+      ? 'Czy to tłumaczenie jest poprawne?'
+      : question.mode === 'reverse'
+        ? 'Przetłumacz na drugi język:'
+        : question.mode === 'multiple'
+          ? 'Wybierz poprawne tłumaczenie:'
+          : 'Przetłumacz lub podaj odpowiedź:';
+  $('#test-prompt').textContent = question.mode === 'true-false'
+    ? `${question.card.front} → ${question.proposedAnswer}`
+    : question.mode === 'reverse' ? question.card.back : question.card.front;
   $('#test-clue-wrap').classList.toggle('hidden', question.mode !== 'missing');
   $('#test-clue').textContent = question.clue;
+  const usesChoices = question.mode === 'multiple' || question.mode === 'true-false';
+  $('#test-choice-wrap').classList.toggle('hidden', !usesChoices);
+  $('#test-choice-legend').textContent = question.mode === 'true-false'
+    ? 'Wybierz odpowiedź'
+    : 'Wybierz jedną odpowiedź';
+  const options = $('#test-choice-options');
+  options.replaceChildren();
+  question.options.forEach((option, index) => {
+    const label = document.createElement('label');
+    label.className = 'test-choice-option';
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.name = 'test-choice';
+    input.value = option;
+    input.required = true;
+    const text = document.createElement('span');
+    text.textContent = question.mode === 'multiple'
+      ? `${String.fromCharCode(65 + index)}. ${option}`
+      : option;
+    label.append(input, text);
+    options.append(label);
+  });
+  $('#test-answer-label').classList.toggle('hidden', usesChoices);
+  $('#test-answer').classList.toggle('hidden', usesChoices);
+  $('#test-answer').required = !usesChoices;
   $('#test-answer').placeholder = question.mode === 'missing' ? 'Wpisz brakujące litery…' : 'Wpisz całe słówko…';
   $('#test-answer-form').reset();
   $('#test-answer').disabled = false;
@@ -779,20 +856,27 @@ function renderTestQuestion() {
   $('#test-feedback').textContent = '';
   $('#test-next').classList.add('hidden');
   $('#test-next').textContent = testIndex === testQuestions.length - 1 ? 'Zobacz wynik →' : 'Następne pytanie →';
-  $('#test-answer').focus();
+  if (usesChoices) options.querySelector('input')?.focus();
+  else $('#test-answer').focus();
 }
 
 function checkTestAnswer(event) {
   event.preventDefault();
   const question = testQuestions[testIndex];
   if (!question || question.answer) return;
-  const answer = $('#test-answer').value.trim();
+  const answer = question.mode === 'multiple' || question.mode === 'true-false'
+    ? $('#test-choice-options input:checked')?.value || ''
+    : $('#test-answer').value.trim();
   if (!answer) {
-    $('#test-answer').focus();
+    if (question.mode === 'multiple' || question.mode === 'true-false') {
+      $('#test-choice-options input')?.focus();
+    } else {
+      $('#test-answer').focus();
+    }
     return;
   }
   question.answer = answer;
-  question.correct = normalizeAnswer(answer) === normalizeAnswer(question.card.back)
+  question.correct = normalizeAnswer(answer) === normalizeAnswer(question.expectedAnswer)
     || (question.mode === 'missing' && normalizeAnswer(answer) === normalizeAnswer(question.missing));
   const feedback = $('#test-feedback');
   feedback.classList.remove('hidden');
@@ -800,7 +884,13 @@ function checkTestAnswer(event) {
   feedback.classList.toggle('incorrect', !question.correct);
   feedback.innerHTML = question.correct
     ? 'Dobrze! To poprawna odpowiedź.'
-    : `Nie tym razem. Poprawna odpowiedź: <strong>${escapeHtml(question.card.back)}</strong>`;
+    : question.mode === 'true-false'
+      ? `Nie tym razem. Poprawna odpowiedź: <strong>${question.expectedAnswer}</strong>${question.expectedAnswer === 'Fałsz'
+        ? ` — poprawne tłumaczenie: <strong>${escapeHtml(question.card.back)}</strong>`
+        : ''}`
+      : `Nie tym razem. Poprawna odpowiedź: <strong>${escapeHtml(question.expectedAnswer)}</strong>`;
+  document.querySelectorAll('#test-choice-options input').forEach((input) => { input.disabled = true; });
+  $('#test-answer-form button').disabled = true;
   $('#test-answer').disabled = true;
   $('#check-test-answer').classList.add('hidden');
   $('#test-next').classList.remove('hidden');
@@ -824,7 +914,9 @@ function finishTest() {
     ? `<p class="eyebrow">DO POWTÓRKI</p>${mistakes.map((question) => `
       <div class="test-mistake">
         <strong>${escapeHtml(question.card.front)} → ${escapeHtml(question.card.back)}</strong>
-        <span>Twoja odpowiedź: ${escapeHtml(question.answer)}</span>
+        <span>Twoja odpowiedź: ${escapeHtml(question.mode === 'true-false' && question.answer === 'Fałsz'
+          ? `Fałsz (${question.proposedAnswer})`
+          : question.answer)}</span>
       </div>`).join('')}`
     : '';
 }
@@ -1197,9 +1289,12 @@ $('#study-done').addEventListener('click', () => {
 $('#test-all-cards').addEventListener('change', (event) => {
   $('#test-question-count').disabled = event.target.checked;
 });
-document.querySelectorAll('#test-mode-full, #test-mode-missing').forEach((input) => {
+document.querySelectorAll('#test-mode-full, #test-mode-missing, #test-mode-multiple, #test-mode-true-false, #test-mode-reverse').forEach((input) => {
   input.addEventListener('change', (event) => {
-    if (!$('#test-mode-full').checked && !$('#test-mode-missing').checked) {
+    const selectedModes = document.querySelectorAll(
+      '#test-mode-full:checked, #test-mode-missing:checked, #test-mode-multiple:checked, #test-mode-true-false:checked, #test-mode-reverse:checked'
+    );
+    if (!selectedModes.length) {
       event.target.checked = true;
       showToast('Wybierz przynajmniej jeden rodzaj pytania.');
     }
