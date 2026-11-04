@@ -23,6 +23,9 @@ jobs:
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
+        with:
+          # Enable Pages automatically the first time this workflow deploys.
+          enablement: true
 
       - name: Build website
         env:
@@ -30,14 +33,15 @@ jobs:
           SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
         run: |
           set -eu
-          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
-            echo "::error::Set the SUPABASE_URL and SUPABASE_ANON_KEY repository variables before deploying."
-            exit 1
-          fi
-
           mkdir -p dist
           cp index.html style.css app.js .nojekyll dist/
-          node -e 'process.stdout.write(`window.FLASHCARDS_CONFIG = ${JSON.stringify({supabaseUrl: process.env.SUPABASE_URL, supabaseAnonKey: process.env.SUPABASE_ANON_KEY})};\n`)' > dist/config.js
+          # Publish the public site even before the owner finishes Supabase setup.
+          if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_ANON_KEY" ]; then
+            node -e 'process.stdout.write(`window.FLASHCARDS_CONFIG = ${JSON.stringify({supabaseUrl: process.env.SUPABASE_URL, supabaseAnonKey: process.env.SUPABASE_ANON_KEY})};\n`)' > dist/config.js
+          else
+            printf "window.FLASHCARDS_CONFIG = { supabaseUrl: '', supabaseAnonKey: '' };\n" > dist/config.js
+            echo "::warning::The public website is deployed, but account login requires the owner to set SUPABASE_URL and SUPABASE_ANON_KEY."
+          fi
           printf 'User-agent: *\nDisallow: /\n' > dist/robots.txt
 
       - name: Upload website artifact

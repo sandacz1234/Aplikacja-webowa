@@ -4,18 +4,17 @@ Responsywna aplikacja do nauki słówek, tworzenia talii i sprawdzianów. Logowa
 
 ## Publikacja na GitHub Pages
 
-Workflow `.github/workflows/deploy-flashcards.yml` publikuje stronę na GitHub Pages po wysłaniu zmian na `main` lub `master`.
+Workflow `.github/workflows/deploy-flashcards.yml` automatycznie włącza GitHub Pages i publikuje stronę po wysłaniu zmian na `main` lub `master`. Repozytorium jest publiczne, więc opublikowaną stronę może otworzyć każdy.
 
 1. Utwórz projekt Supabase i uruchom plik `supabase/schema.sql` w SQL Editorze projektu.
 2. Skopiuj URL projektu oraz publiczny klucz `anon`/publishable.
-3. W repozytorium GitHub otwórz **Settings → Secrets and variables → Actions → Variables** i dodaj:
+3. Aby włączyć konta i synchronizację talii, w repozytorium GitHub otwórz **Settings → Secrets and variables → Actions → Variables** i dodaj:
    - `SUPABASE_URL` — URL projektu,
    - `SUPABASE_ANON_KEY` — publiczny klucz `anon`/publishable.
-4. W **Settings → Pages** ustaw źródło wdrożenia **GitHub Actions**.
-5. W **Supabase → Authentication → URL Configuration** dodaj adres GitHub Pages jako **Site URL** i do **Redirect URLs**.
-6. Wypchnij zmiany na `main` lub `master`. Adres strony znajdziesz w **Settings → Pages**.
+4. W **Supabase → Authentication → URL Configuration** dodaj adres GitHub Pages jako **Site URL** i do **Redirect URLs**.
+5. Wypchnij zmiany na `main` lub `master`. Workflow sam skonfiguruje GitHub Pages. Adres strony znajdziesz w **Settings → Pages**.
 
-`config.js` w repozytorium jest pustym szablonem. Workflow tworzy właściwą konfigurację w artefakcie wdrożeniowym ze zmiennych repozytorium, więc użytkownicy aplikacji nie wpisują danych Supabase. Nie umieszczaj w aplikacji ani zmiennych GitHub Actions klucza `service_role` lub klucza Google Vision. Publiczny klucz Supabase jest przeznaczony do aplikacji przeglądarkowej; dostęp do danych ograniczają polityki RLS.
+`config.js` w repozytorium jest pustym szablonem. Workflow tworzy właściwą konfigurację w artefakcie wdrożeniowym ze zmiennych repozytorium. Bez tych zmiennych strona nadal się publikuje i wyświetla ekran logowania, ale logowanie i tworzenie kont będą dostępne dopiero po jednorazowej konfiguracji Supabase przez właściciela. Użytkownicy nie wpisują własnych danych Supabase. Nie umieszczaj w aplikacji ani zmiennych GitHub Actions klucza `service_role` lub klucza Google Vision. Publiczny klucz Supabase jest przeznaczony do aplikacji przeglądarkowej; dostęp do danych ograniczają polityki RLS.
 
 ## Rozpoznawanie zdjęć
 
