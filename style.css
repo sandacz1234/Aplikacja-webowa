@@ -351,3 +351,52 @@ html, body { width: 100%; height: 100%; min-height: 100%; overflow: hidden; }
   .photo-pairs-heading, .photo-pair-row { grid-template-columns: 1fr 1fr 28px; gap: 5px; }
   .photo-pair-row input { padding: 9px 6px; font-size: 10px; }
 }
+
+.tense-heading { margin: 8px 0 29px; }
+.tense-heading h1, .tense-lesson-heading h1 { font-size: clamp(29px, 3.5vw, 39px); }
+.tense-intro { max-width: 620px; margin: 11px 0 0; color: #89918c; font-size: 12px; line-height: 1.8; }
+.tense-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
+.tense-card { min-width: 0; min-height: 92px; display: flex; align-items: center; gap: 13px; padding: 15px; border: 1px solid #ecefeb; border-radius: 10px; background: #fff; text-align: left; transition: transform .18s, box-shadow .18s, border-color .18s; }
+.tense-card:hover { transform: translateY(-2px); border-color: #d6e5dc; box-shadow: 0 8px 20px #34453b0c; }
+.tense-card-number { display: grid; place-items: center; width: 36px; height: 36px; flex: 0 0 36px; border-radius: 10px; background: #edf5f1; color: var(--green); font: 700 11px Manrope, sans-serif; }
+.tense-card-copy { display: grid; gap: 5px; min-width: 0; }
+.tense-card-copy strong { color: #39433d; font: 700 12px Manrope, sans-serif; }
+.tense-card-copy span { color: #929a95; font-size: 10px; }
+.tense-card-arrow { margin-left: auto; color: #9bab9f; font-size: 16px; }
+.back-link { margin: 0 0 20px; }
+.tense-lesson-heading { margin: 2px 0 24px; }
+.tense-tabs { display: flex; gap: 22px; border-bottom: 1px solid #e6ebe7; margin-bottom: 20px; }
+.tense-tab { position: relative; border: 0; background: transparent; padding: 0 2px 12px; color: #8a938d; font-size: 12px; font-weight: 600; }
+.tense-tab.active { color: var(--green); }
+.tense-tab.active::after { position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: var(--green); content: ''; }
+.tense-exercise-card { width: min(760px, 100%); margin: 0 auto; padding: clamp(20px, 4vw, 34px); border: 1px solid #ecefeb; border-radius: 12px; background: #fff; box-shadow: 0 10px 28px #34453b08; }
+.tense-exercise-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #919a94; font-size: 10px; }
+.level-badge { display: inline-flex; align-items: center; min-height: 24px; padding: 0 9px; border-radius: 20px; background: #edf5f1; color: #357967; font-size: 10px; font-weight: 700; }
+.level-badge.level-b1, .level-badge.level-b2 { background: #f0eef8; color: #7569a5; }
+.level-badge.level-c1, .level-badge.level-c2 { background: #fcf0e9; color: #b8754e; }
+.tense-exercise-instruction { margin: 27px 0 8px; color: #7d8780; font-size: 11px; line-height: 1.7; }
+.tense-exercise-prompt { margin: 0 0 23px; color: #29352e; font: 600 clamp(17px, 2.4vw, 21px)/1.55 Manrope, sans-serif; }
+.tense-answer-form { display: grid; gap: 9px; }
+.tense-answer-form label { color: #657069; font-size: 10px; font-weight: 600; }
+.tense-answer-form input { width: 100%; min-height: 42px; padding: 10px 12px; border: 1px solid #e4e9e4; border-radius: 7px; outline: none; color: #39433d; font-size: 12px; }
+.tense-answer-form input:focus { border-color: #83ad98; box-shadow: 0 0 0 3px #dcece3; }
+.tense-answer-form .button { justify-self: start; margin-top: 3px; }
+.tense-exercise-feedback { margin-top: 15px; padding: 12px 14px; border-radius: 8px; font-size: 11px; line-height: 1.7; }
+.tense-exercise-feedback.correct { background: #edf5f1; color: #286653; }
+.tense-exercise-feedback.incorrect { background: #fcf0e9; color: #8b5840; }
+.tense-exercise-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 15px; }
+.tense-theory-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.tense-theory-card { padding: 18px; border: 1px solid #ecefeb; border-radius: 10px; background: #fff; }
+.tense-theory-card h3 { margin: 0 0 8px; color: #39433d; font-size: 12px; }
+.tense-theory-card p { margin: 0; color: #7d8780; font-size: 11px; line-height: 1.8; }
+
+@media (max-width: 1000px) {
+  .tense-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .tense-grid, .tense-theory-grid { grid-template-columns: 1fr; }
+  .tense-card { min-height: 78px; }
+  .tense-lesson-heading h1 { font-size: 28px; }
+  .tense-exercise-card { padding: 19px; }
+  .tense-exercise-actions { flex-wrap: wrap; }
+}

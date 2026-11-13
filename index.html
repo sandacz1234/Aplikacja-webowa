@@ -41,6 +41,7 @@
       <nav class="main-nav" aria-label="Menu główne">
         <button class="nav-link active" data-view="home"><span class="nav-icon">⌂</span> Moje talie</button>
         <button class="nav-link" data-view="study"><span class="nav-icon">✳</span> Nauka</button>
+        <button class="nav-link" data-view="english-tenses"><span class="nav-icon">Aa</span> Czasy angielskie</button>
       </nav>
       <div class="sidebar-bottom">
         <div class="sidebar-note">
@@ -198,6 +199,49 @@
           <span class="complete-icon">✦</span><p class="eyebrow">WYNIK SPRAWDZIANU</p><h2 id="test-score"></h2><p id="test-result-message"></p>
           <div id="test-mistakes" class="test-mistakes"></div>
           <div class="complete-actions"><button class="button button-primary" id="test-again">Spróbuj ponownie</button><button class="button button-light" id="test-done">Gotowe</button></div>
+        </div>
+      </section>
+
+      <section id="english-tenses-view" class="view hidden">
+        <div id="tense-catalog">
+          <div class="tense-heading">
+            <p class="eyebrow">GRAMATYKA KROK PO KROKU</p>
+            <h1>Czasy angielskie<span class="heading-dot">.</span></h1>
+            <p class="tense-intro">Wybierz czas, poznaj jego budowę i przećwicz go na zadaniach z poziomami A1–C2.</p>
+          </div>
+          <div id="tense-grid" class="tense-grid"></div>
+        </div>
+        <div id="tense-lesson" class="hidden">
+          <button class="back-link" id="back-to-tenses">← Wszystkie czasy</button>
+          <div class="tense-lesson-heading">
+            <p class="eyebrow">TEORIA I ĆWICZENIA</p>
+            <h1 id="tense-title"></h1>
+            <p id="tense-summary" class="tense-intro"></p>
+          </div>
+          <div class="tense-tabs" role="tablist" aria-label="Materiały do wybranego czasu">
+            <button class="tense-tab active" id="tense-exercise-tab" type="button" role="tab" aria-selected="true" aria-controls="tense-exercises">Ćwiczenia</button>
+            <button class="tense-tab" id="tense-theory-tab" type="button" role="tab" aria-selected="false" aria-controls="tense-theory">Teoria</button>
+          </div>
+          <div id="tense-exercises" class="tense-panel" role="tabpanel" aria-labelledby="tense-exercise-tab">
+            <div class="tense-exercise-card">
+              <div class="tense-exercise-meta"><span id="tense-exercise-count"></span><span id="tense-exercise-level" class="level-badge"></span></div>
+              <p id="tense-exercise-instruction" class="tense-exercise-instruction"></p>
+              <p id="tense-exercise-prompt" class="tense-exercise-prompt"></p>
+              <form id="tense-answer-form" class="tense-answer-form">
+                <label for="tense-answer">Twoja odpowiedź</label>
+                <input id="tense-answer" type="text" autocomplete="off" spellcheck="false" placeholder="Wpisz zdanie po angielsku…" required>
+                <button class="button button-primary" id="tense-check-answer" type="submit">Sprawdź odpowiedź</button>
+              </form>
+              <div id="tense-exercise-feedback" class="tense-exercise-feedback hidden" role="status" aria-live="polite"></div>
+              <div class="tense-exercise-actions">
+                <button class="button button-light hidden" id="tense-retry" type="button">Spróbuj ponownie</button>
+                <button class="button button-primary hidden" id="tense-next" type="button">Następne zadanie →</button>
+              </div>
+            </div>
+          </div>
+          <div id="tense-theory" class="tense-panel hidden" role="tabpanel" aria-labelledby="tense-theory-tab">
+            <div id="tense-theory-content" class="tense-theory-grid"></div>
+          </div>
         </div>
       </section>
     </main>

@@ -5,6 +5,236 @@ const CATEGORY_ICONS = {
   Prawo: '§', Inne: '✳'
 };
 const COLOR_CLASSES = ['mint', 'peach', 'lilac', 'blue', 'yellow'];
+const ENGLISH_TENSES = [
+  {
+    id: 'present-simple', name: 'Present Simple', short: 'Teraźniejszy prosty',
+    summary: 'Nawyki, fakty i czynności regularne.',
+    theory: {
+      use: 'Używamy go do opisywania nawyków, rutyny, faktów i stanów. Często występuje z określeniami częstotliwości.',
+      affirmative: 'I/You/We/They + czasownik w formie podstawowej. He/She/It + czasownik z końcówką -s lub -es.',
+      negative: 'I/You/We/They + do not (don’t) + czasownik. He/She/It + does not (doesn’t) + czasownik bez -s.',
+      question: 'Do + I/you/we/they + czasownik? Does + he/she/it + czasownik bez -s?',
+      signals: 'always, usually, often, sometimes, never, every day, on Mondays',
+      example: 'She works every day. / She doesn’t work on Sundays. / Does she work here?'
+    },
+    exercises: [
+      { level: 'A1', instruction: 'Uzupełnij zdanie poprawną formą czasownika w nawiasie.', prompt: 'Tom ___ (play) tennis every Saturday.', answers: ['plays'], tip: 'W 3. osobie liczby pojedynczej dodajemy do czasownika -s.' },
+      { level: 'A1', instruction: 'Przetłumacz zdanie na angielski.', prompt: 'Oni mieszkają w Londynie.', answers: ['They live in London.'], tip: 'Dla they użyj czasownika w formie podstawowej.' },
+      { level: 'A2', instruction: 'Utwórz przeczenie. Użyj skróconej formy.', prompt: 'She likes coffee. → She ___ coffee.', answers: ['doesn’t like', 'does not like'], tip: 'Po doesn’t czasownik nie ma końcówki -s.' },
+      { level: 'A2', instruction: 'Ułóż pytanie z podanych wyrazów.', prompt: 'your brother / work / here?', answers: ['Does your brother work here?'], tip: 'Pytanie zaczyna się od Does, a czasownik pozostaje w formie podstawowej.' },
+      { level: 'B1', instruction: 'Wybierz poprawną formę i wpisz całe zdanie.', prompt: 'My parents ___ (not / watch) TV in the morning.', answers: ['My parents don’t watch TV in the morning.', 'My parents do not watch TV in the morning.'], tip: 'Dla parents użyj don’t + forma podstawowa.' }
+    ]
+  },
+  {
+    id: 'present-continuous', name: 'Present Continuous', short: 'Teraźniejszy ciągły',
+    summary: 'Czynności trwające teraz i sytuacje tymczasowe.',
+    theory: {
+      use: 'Opisuje czynności trwające w chwili mówienia, sytuacje tymczasowe oraz ustalone plany na bliską przyszłość.',
+      affirmative: 'Podmiot + am/is/are + czasownik z końcówką -ing. I am; he/she/it is; you/we/they are.',
+      negative: 'Podmiot + am/is/are + not + czasownik z -ing. Skróty: isn’t, aren’t; I’m not.',
+      question: 'Am/Is/Are + podmiot + czasownik z -ing?',
+      signals: 'now, right now, at the moment, today, this week, Look!, Listen!',
+      example: 'They are studying now. / They aren’t studying now. / Are they studying now?'
+    },
+    exercises: [
+      { level: 'A1', instruction: 'Uzupełnij zdanie formą Present Continuous.', prompt: 'I ___ (read) a book right now.', answers: ['am reading'], tip: 'Po I użyj am, a do czasownika dodaj -ing.' },
+      { level: 'A1', instruction: 'Przetłumacz zdanie na angielski.', prompt: 'Ona teraz gotuje obiad.', answers: ['She is cooking dinner now.'], tip: 'She + is + cooking.' },
+      { level: 'A2', instruction: 'Utwórz przeczenie.', prompt: 'We are waiting for the bus. → We ___ for the bus.', answers: ['aren’t waiting', 'are not waiting'], tip: 'Po we użyj aren’t + czasownik z -ing.' },
+      { level: 'A2', instruction: 'Ułóż pytanie z podanych wyrazów.', prompt: 'they / listen / to music / now?', answers: ['Are they listening to music now?'], tip: 'Zacznij od Are, potem podmiot i czasownik z -ing.' },
+      { level: 'B1', instruction: 'Uzupełnij zdanie poprawną formą czasownika.', prompt: 'Look! The children ___ (run) in the garden.', answers: ['are running'], tip: 'The children to liczba mnoga; run podwaja n przed -ing.' }
+    ]
+  },
+  {
+    id: 'present-perfect', name: 'Present Perfect', short: 'Teraźniejszy dokonany',
+    summary: 'Doświadczenia i przeszłość mająca związek z teraźniejszością.',
+    theory: {
+      use: 'Opisuje doświadczenia bez podania konkretnego czasu, niedawne zdarzenia i sytuacje z przeszłości, których skutek jest ważny teraz.',
+      affirmative: 'Podmiot + have/has + past participle (III forma). He/She/It używa has; pozostałe osoby have.',
+      negative: 'Podmiot + haven’t/hasn’t + III forma czasownika.',
+      question: 'Have/Has + podmiot + III forma czasownika?',
+      signals: 'already, just, yet, ever, never, recently, so far, since, for',
+      example: 'I have lost my keys. / I haven’t found them yet. / Have you seen them?'
+    },
+    exercises: [
+      { level: 'A2', instruction: 'Uzupełnij zdanie formą Present Perfect.', prompt: 'She ___ (finish) her homework already.', answers: ['has finished'], tip: 'She używa has; regularny czasownik ma III formę finished.' },
+      { level: 'A2', instruction: 'Przetłumacz zdanie na angielski.', prompt: 'Nigdy nie widziałem tego filmu.', answers: ['I have never seen this film.', 'I’ve never seen this film.'], tip: 'Po have użyj III formy nieregularnego see: seen.' },
+      { level: 'B1', instruction: 'Utwórz pytanie.', prompt: 'you / ever / visit / Scotland?', answers: ['Have you ever visited Scotland?'], tip: 'Pytanie zaczyna się od Have; po ever użyj III formy visited.' },
+      { level: 'B1', instruction: 'Uzupełnij przeczenie.', prompt: 'He ___ (not / call) me yet.', answers: ['hasn’t called', 'has not called'], tip: 'Yet często występuje w przeczeniach Present Perfect.' },
+      { level: 'B2', instruction: 'Wpisz poprawną formę czasownika.', prompt: 'We ___ (know) each other for ten years.', answers: ['have known'], tip: 'Czasownik know opisuje stan trwający od przeszłości do teraz.' }
+    ]
+  },
+  {
+    id: 'present-perfect-continuous', name: 'Present Perfect Continuous', short: 'Teraźniejszy dokonany ciągły',
+    summary: 'Czynność trwająca od przeszłości lub jej widoczny skutek.',
+    theory: {
+      use: 'Podkreśla czas trwania czynności rozpoczętej w przeszłości i trwającej nadal albo jej widoczny, niedawny skutek.',
+      affirmative: 'Podmiot + have/has been + czasownik z końcówką -ing.',
+      negative: 'Podmiot + haven’t/hasn’t been + czasownik z -ing.',
+      question: 'Have/Has + podmiot + been + czasownik z -ing?',
+      signals: 'for, since, all day, lately, recently, how long',
+      example: 'It has been raining for hours. / It hasn’t been raining. / Has it been raining?'
+    },
+    exercises: [
+      { level: 'B1', instruction: 'Uzupełnij zdanie formą Present Perfect Continuous.', prompt: 'I ___ (learn) English since September.', answers: ['have been learning'], tip: 'I + have been + czasownik z -ing.' },
+      { level: 'B1', instruction: 'Przetłumacz zdanie na angielski.', prompt: 'Ona pracuje tutaj od pięciu lat.', answers: ['She has been working here for five years.'], tip: 'Dla she użyj has been; for wskazuje okres trwania.' },
+      { level: 'B2', instruction: 'Utwórz pytanie.', prompt: 'how long / they / wait?', answers: ['How long have they been waiting?'], tip: 'Po How long użyj have + podmiot + been + -ing.' },
+      { level: 'B2', instruction: 'Uzupełnij przeczenie.', prompt: 'He ___ (not / sleep) well lately.', answers: ['hasn’t been sleeping', 'has not been sleeping'], tip: 'He + hasn’t been + czasownik z -ing.' },
+      { level: 'C1', instruction: 'Uzupełnij zdanie, podkreślając długość trwania czynności.', prompt: 'Your hands are dirty. What ___ you ___ (do)?', answers: ['have you been doing'], tip: 'Pytamy o czynność, która doprowadziła do widocznego skutku.' }
+    ]
+  },
+  {
+    id: 'past-simple', name: 'Past Simple', short: 'Przeszły prosty',
+    summary: 'Zakończone wydarzenia w określonym czasie w przeszłości.',
+    theory: {
+      use: 'Opisuje zakończone czynności i wydarzenia z przeszłości, często z podanym momentem lub okresem.',
+      affirmative: 'Podmiot + czasownik w II formie. Czasowniki regularne otrzymują końcówkę -ed; nieregularne mają własną II formę.',
+      negative: 'Podmiot + did not (didn’t) + czasownik w formie podstawowej.',
+      question: 'Did + podmiot + czasownik w formie podstawowej?',
+      signals: 'yesterday, last week, ago, in 2020, when I was young',
+      example: 'She visited Rome. / She didn’t visit Rome. / Did she visit Rome?'
+    },
+    exercises: [
+      { level: 'A1', instruction: 'Uzupełnij zdanie w Past Simple.', prompt: 'We ___ (watch) a film last night.', answers: ['watched'], tip: 'Regularny czasownik watch otrzymuje końcówkę -ed.' },
+      { level: 'A1', instruction: 'Przetłumacz zdanie na angielski.', prompt: 'Wczoraj kupiłem nowy telefon.', answers: ['I bought a new phone yesterday.'], tip: 'Buy jest nieregularne: II forma to bought.' },
+      { level: 'A2', instruction: 'Utwórz przeczenie. Użyj skróconej formy.', prompt: 'He went to school. → He ___ to school.', answers: ['didn’t go', 'did not go'], tip: 'Po didn’t użyj formy podstawowej go, nie went.' },
+      { level: 'A2', instruction: 'Ułóż pytanie z podanych wyrazów.', prompt: 'you / see / Anna / yesterday?', answers: ['Did you see Anna yesterday?'], tip: 'Po Did użyj formy podstawowej see.' },
+      { level: 'B1', instruction: 'Uzupełnij zdanie poprawną formą czasownika.', prompt: 'They ___ (not / have) enough time last week.', answers: ['didn’t have', 'did not have'], tip: 'Przeczenie w Past Simple tworzymy przez didn’t + have.' }
+    ]
+  },
+  {
+    id: 'past-continuous', name: 'Past Continuous', short: 'Przeszły ciągły',
+    summary: 'Czynności trwające w określonym momencie w przeszłości.',
+    theory: {
+      use: 'Opisuje czynność trwającą o określonej porze w przeszłości, tło wydarzeń lub czynność przerwaną przez inne zdarzenie.',
+      affirmative: 'Podmiot + was/were + czasownik z końcówką -ing. I/he/she/it was; you/we/they were.',
+      negative: 'Podmiot + wasn’t/weren’t + czasownik z -ing.',
+      question: 'Was/Were + podmiot + czasownik z -ing?',
+      signals: 'at 5 o’clock yesterday, while, when, all evening',
+      example: 'I was cooking when he called. / I wasn’t cooking. / Were you cooking?'
+    },
+    exercises: [
+      { level: 'A2', instruction: 'Uzupełnij zdanie w Past Continuous.', prompt: 'At 8 p.m. I ___ (do) my homework.', answers: ['was doing'], tip: 'I używa was + czasownik z -ing.' },
+      { level: 'A2', instruction: 'Przetłumacz zdanie na angielski.', prompt: 'Dzieci bawiły się, kiedy zaczął padać deszcz.', answers: ['The children were playing when it started to rain.'], tip: 'Dłuższa czynność w tle: were playing.' },
+      { level: 'B1', instruction: 'Utwórz pytanie.', prompt: 'what / you / do / at midnight?', answers: ['What were you doing at midnight?'], tip: 'Dla you użyj were przed podmiotem.' },
+      { level: 'B1', instruction: 'Uzupełnij przeczenie.', prompt: 'She ___ (not / listen) when the teacher spoke.', answers: ['wasn’t listening', 'was not listening'], tip: 'She + wasn’t + czasownik z -ing.' },
+      { level: 'B2', instruction: 'Uzupełnij obie formy czasowników.', prompt: 'While we ___ (walk) home, it ___ (begin) to snow.', answers: ['were walking; began', 'were walking, began'], tip: 'Czynność trwająca: Past Continuous; krótkie zdarzenie: Past Simple.' }
+    ]
+  },
+  {
+    id: 'past-perfect', name: 'Past Perfect', short: 'Zaprzeszły',
+    summary: 'Wcześniejsza czynność przed innym wydarzeniem w przeszłości.',
+    theory: {
+      use: 'Pokazuje, że jedna czynność wydarzyła się przed inną czynnością lub momentem w przeszłości.',
+      affirmative: 'Podmiot + had + III forma czasownika. Forma had jest taka sama dla wszystkich osób.',
+      negative: 'Podmiot + had not (hadn’t) + III forma czasownika.',
+      question: 'Had + podmiot + III forma czasownika?',
+      signals: 'before, after, by the time, already, never, when',
+      example: 'They had left before I arrived. / They hadn’t left. / Had they left?'
+    },
+    exercises: [
+      { level: 'B1', instruction: 'Uzupełnij zdanie w Past Perfect.', prompt: 'The train ___ (leave) before we arrived.', answers: ['had left'], tip: 'Wcześniejsze wydarzenie: had + III forma leave → left.' },
+      { level: 'B1', instruction: 'Przetłumacz zdanie na angielski.', prompt: 'Ona skończyła pracę, zanim zadzwoniłem.', answers: ['She had finished work before I called.'], tip: 'Skończenie pracy nastąpiło wcześniej: had finished.' },
+      { level: 'B2', instruction: 'Utwórz pytanie.', prompt: 'they / eat / before the meeting?', answers: ['Had they eaten before the meeting?'], tip: 'Pytanie zaczynamy od Had; III forma eat to eaten.' },
+      { level: 'B2', instruction: 'Uzupełnij przeczenie.', prompt: 'I ___ (not / see) the film before yesterday.', answers: ['hadn’t seen', 'had not seen'], tip: 'Po hadn’t użyj III formy seen.' },
+      { level: 'C1', instruction: 'Uzupełnij zdanie odpowiednią formą.', prompt: 'By the time the doctor arrived, the patient ___ (fall) asleep.', answers: ['had fallen'], tip: 'By the time wskazuje, że zaśnięcie nastąpiło wcześniej.' }
+    ]
+  },
+  {
+    id: 'past-perfect-continuous', name: 'Past Perfect Continuous', short: 'Zaprzeszły ciągły',
+    summary: 'Czas trwania czynności poprzedzającej moment w przeszłości.',
+    theory: {
+      use: 'Podkreśla, jak długo czynność trwała przed innym wydarzeniem lub momentem w przeszłości.',
+      affirmative: 'Podmiot + had been + czasownik z końcówką -ing.',
+      negative: 'Podmiot + hadn’t been + czasownik z końcówką -ing.',
+      question: 'Had + podmiot + been + czasownik z końcówką -ing?',
+      signals: 'for, since, before, until, how long, all day',
+      example: 'He had been working for hours before he took a break.'
+    },
+    exercises: [
+      { level: 'B2', instruction: 'Uzupełnij zdanie w Past Perfect Continuous.', prompt: 'She ___ (study) for hours before the exam started.', answers: ['had been studying'], tip: 'Podkreślamy długość nauki przed egzaminem.' },
+      { level: 'B2', instruction: 'Przetłumacz zdanie na angielski.', prompt: 'Czekaliśmy godzinę, zanim przyjechał autobus.', answers: ['We had been waiting for an hour before the bus arrived.'], tip: 'Czekanie trwało przed przyjazdem autobusu.' },
+      { level: 'B2', instruction: 'Utwórz pytanie.', prompt: 'how long / he / work / there before he resigned?', answers: ['How long had he been working there before he resigned?'], tip: 'Użyj had + podmiot + been + -ing.' },
+      { level: 'C1', instruction: 'Uzupełnij przeczenie.', prompt: 'They ___ (not / live) there long when they moved.', answers: ['hadn’t been living', 'had not been living'], tip: 'Po hadn’t been użyj czasownika z -ing.' },
+      { level: 'C1', instruction: 'Uzupełnij zdanie poprawną formą czasownika.', prompt: 'His clothes were wet because he ___ (walk) in the rain.', answers: ['had been walking'], tip: 'Czynność trwała wcześniej i wyjaśniała widoczny skutek.' }
+    ]
+  },
+  {
+    id: 'future-simple', name: 'Future Simple', short: 'Przyszły prosty',
+    summary: 'Decyzje, obietnice, przewidywania i przyszłe fakty.',
+    theory: {
+      use: 'Stosujemy will do spontanicznych decyzji, obietnic, ofert i przewidywań, a także do przyszłych faktów.',
+      affirmative: 'Podmiot + will + czasownik w formie podstawowej. Skrót: ’ll.',
+      negative: 'Podmiot + will not (won’t) + czasownik w formie podstawowej.',
+      question: 'Will + podmiot + czasownik w formie podstawowej?',
+      signals: 'tomorrow, next week, I think, probably, perhaps, I promise',
+      example: 'I will help you. / I won’t forget. / Will you call me?'
+    },
+    exercises: [
+      { level: 'A2', instruction: 'Uzupełnij zdanie formą Future Simple.', prompt: 'I think it ___ (rain) tomorrow.', answers: ['will rain'], tip: 'Po will zawsze używamy formy podstawowej czasownika.' },
+      { level: 'A2', instruction: 'Przetłumacz zdanie na angielski.', prompt: 'Pomogę ci z tym zadaniem.', answers: ['I will help you with this task.', 'I’ll help you with this task.'], tip: 'Will + help wyraża decyzję lub obietnicę.' },
+      { level: 'B1', instruction: 'Utwórz przeczenie. Użyj skróconej formy.', prompt: 'She ___ (not / be) late.', answers: ['She won’t be late.', 'She will not be late.'], tip: 'Po won’t użyj formy podstawowej be.' },
+      { level: 'B1', instruction: 'Ułóż pytanie z podanych wyrazów.', prompt: 'you / come / to the party?', answers: ['Will you come to the party?'], tip: 'Pytanie zaczynamy od Will.' },
+      { level: 'B2', instruction: 'Uzupełnij zdanie obietnicą.', prompt: 'I promise I ___ (tell) anyone your secret.', answers: ['won’t tell', 'will not tell'], tip: 'Obietnicę, że czegoś nie zrobimy, wyrażamy przez won’t.' }
+    ]
+  },
+  {
+    id: 'future-continuous', name: 'Future Continuous', short: 'Przyszły ciągły',
+    summary: 'Czynność, która będzie trwała w określonym momencie w przyszłości.',
+    theory: {
+      use: 'Opisuje czynność, która będzie w toku o określonej porze w przyszłości, albo uprzejmie pyta o czyjeś plany.',
+      affirmative: 'Podmiot + will be + czasownik z końcówką -ing.',
+      negative: 'Podmiot + will not (won’t) be + czasownik z końcówką -ing.',
+      question: 'Will + podmiot + be + czasownik z końcówką -ing?',
+      signals: 'this time tomorrow, at 8 p.m. next Monday, all day tomorrow',
+      example: 'This time tomorrow, we will be flying. / Will you be working?'
+    },
+    exercises: [
+      { level: 'B1', instruction: 'Uzupełnij zdanie w Future Continuous.', prompt: 'This time tomorrow, we ___ (fly) to Spain.', answers: ['will be flying'], tip: 'Po will dodaj be i czasownik z -ing.' },
+      { level: 'B1', instruction: 'Przetłumacz zdanie na angielski.', prompt: 'O tej porze jutro będę pracować.', answers: ['I will be working at this time tomorrow.', 'I’ll be working at this time tomorrow.'], tip: 'Czynność będzie trwała o określonej porze.' },
+      { level: 'B2', instruction: 'Utwórz pytanie.', prompt: 'you / use / the car / this evening?', answers: ['Will you be using the car this evening?'], tip: 'Pytanie zaczyna się od Will, po podmiocie użyj be + -ing.' },
+      { level: 'B2', instruction: 'Uzupełnij przeczenie.', prompt: 'They ___ (not / stay) at the hotel next week.', answers: ['won’t be staying', 'will not be staying'], tip: 'Przeczenie: won’t be + czasownik z -ing.' },
+      { level: 'C1', instruction: 'Uzupełnij zdanie, opisując czynność trwającą o wskazanej porze.', prompt: 'At noon on Friday, the team ___ (present) its results.', answers: ['will be presenting'], tip: 'At noon wskazuje konkretny moment w przyszłości.' }
+    ]
+  },
+  {
+    id: 'future-perfect', name: 'Future Perfect', short: 'Przyszły dokonany',
+    summary: 'Czynność zakończona przed określonym momentem w przyszłości.',
+    theory: {
+      use: 'Opisuje czynność, która zostanie zakończona przed określonym momentem lub innym wydarzeniem w przyszłości.',
+      affirmative: 'Podmiot + will have + III forma czasownika.',
+      negative: 'Podmiot + will not (won’t) have + III forma czasownika.',
+      question: 'Will + podmiot + have + III forma czasownika?',
+      signals: 'by, by the time, before, by next year, in two hours',
+      example: 'She will have finished by noon. / Will she have finished by noon?'
+    },
+    exercises: [
+      { level: 'B2', instruction: 'Uzupełnij zdanie w Future Perfect.', prompt: 'By Friday, I ___ (complete) the report.', answers: ['will have completed'], tip: 'By Friday wskazuje termin, do którego raport będzie ukończony.' },
+      { level: 'B2', instruction: 'Przetłumacz zdanie na angielski.', prompt: 'Do końca roku oni zbudują nowy most.', answers: ['They will have built a new bridge by the end of the year.'], tip: 'Po will have użyj III formy built.' },
+      { level: 'B2', instruction: 'Utwórz pytanie.', prompt: 'you / finish / the book / by Monday?', answers: ['Will you have finished the book by Monday?'], tip: 'Pytanie zaczyna się od Will; dalej have + III forma.' },
+      { level: 'C1', instruction: 'Uzupełnij przeczenie.', prompt: 'We ___ (not / arrive) by 6 p.m.', answers: ['won’t have arrived', 'will not have arrived'], tip: 'Po won’t have użyj III formy arrived.' },
+      { level: 'C1', instruction: 'Uzupełnij zdanie poprawną formą.', prompt: 'By the time you get home, the children ___ (go) to bed.', answers: ['will have gone'], tip: 'Pójście spać nastąpi przed twoim powrotem.' }
+    ]
+  },
+  {
+    id: 'future-perfect-continuous', name: 'Future Perfect Continuous', short: 'Przyszły dokonany ciągły',
+    summary: 'Czas trwania czynności do określonego momentu w przyszłości.',
+    theory: {
+      use: 'Podkreśla, jak długo czynność będzie trwała do określonego momentu w przyszłości.',
+      affirmative: 'Podmiot + will have been + czasownik z końcówką -ing.',
+      negative: 'Podmiot + will not (won’t) have been + czasownik z końcówką -ing.',
+      question: 'Will + podmiot + have been + czasownik z końcówką -ing?',
+      signals: 'for, by, by the time, by next month, how long',
+      example: 'By June, I will have been working here for a year.'
+    },
+    exercises: [
+      { level: 'C1', instruction: 'Uzupełnij zdanie w Future Perfect Continuous.', prompt: 'By June, she ___ (teach) here for ten years.', answers: ['will have been teaching'], tip: 'Podkreślamy czas trwania pracy do czerwca.' },
+      { level: 'C1', instruction: 'Przetłumacz zdanie na angielski.', prompt: 'W przyszłym tygodniu będę czekać na odpowiedź już od miesiąca.', answers: ['By next week, I will have been waiting for an answer for a month.'], tip: 'Użyj will have been + waiting.' },
+      { level: 'C1', instruction: 'Utwórz pytanie.', prompt: 'how long / you / travel / by the time you arrive?', answers: ['How long will you have been travelling by the time you arrive?', 'How long will you have been traveling by the time you arrive?'], tip: 'Po will użyj have been i czasownika z -ing.' },
+      { level: 'C2', instruction: 'Uzupełnij przeczenie.', prompt: 'He ___ (not / work) here for long by the end of May.', answers: ['won’t have been working', 'will not have been working'], tip: 'Schemat przeczenia: won’t have been + -ing.' },
+      { level: 'C2', instruction: 'Uzupełnij zdanie, podkreślając długość trwania.', prompt: 'At 5 p.m., they ___ (drive) for eight hours.', answers: ['will have been driving'], tip: 'Czynność będzie trwała przez osiem godzin do wskazanego momentu.' }
+    ]
+  }
+];
 
 let data = { decks: [] };
 let supabaseClient = null;
@@ -28,8 +258,12 @@ const homeView = $('#home-view');
 const deckView = $('#deck-view');
 const studyView = $('#study-view');
 const testView = $('#test-view');
+const englishTensesView = $('#english-tenses-view');
 const authScreen = $('#auth-screen');
 const appShell = $('#app-shell');
+let activeTenseId = null;
+let activeTenseExerciseIndex = 0;
+let tenseAnswerChecked = false;
 
 function setAuthStatus(message, isError = false) {
   const status = $('#auth-status');
@@ -456,15 +690,144 @@ function renderCards(deck) {
   });
 }
 
+function renderTenseCatalog() {
+  $('#tense-grid').innerHTML = ENGLISH_TENSES.map((tense, index) => `
+    <button class="tense-card" type="button" data-tense-id="${tense.id}">
+      <span class="tense-card-number">${String(index + 1).padStart(2, '0')}</span>
+      <span class="tense-card-copy"><strong>${escapeHtml(tense.name)}</strong><span>${escapeHtml(tense.short)}</span></span>
+      <span class="tense-card-arrow" aria-hidden="true">→</span>
+    </button>
+  `).join('');
+  $('#tense-grid').querySelectorAll('[data-tense-id]').forEach((button) => {
+    button.addEventListener('click', () => openTense(button.dataset.tenseId));
+  });
+}
+
+function openTense(tenseId) {
+  const tense = ENGLISH_TENSES.find((item) => item.id === tenseId);
+  if (!tense) return;
+  activeTenseId = tense.id;
+  activeTenseExerciseIndex = 0;
+  $('#tense-catalog').classList.add('hidden');
+  $('#tense-lesson').classList.remove('hidden');
+  $('#tense-title').textContent = tense.name;
+  $('#tense-summary').textContent = tense.summary;
+  $('#tense-theory-content').innerHTML = [
+    ['Kiedy używamy?', tense.theory.use],
+    ['Zdanie twierdzące', tense.theory.affirmative],
+    ['Przeczenie', tense.theory.negative],
+    ['Pytanie', tense.theory.question],
+    ['Typowe określenia czasu', tense.theory.signals],
+    ['Przykłady', tense.theory.example]
+  ].map(([title, content]) => `
+    <article class="tense-theory-card">
+      <h3>${escapeHtml(title)}</h3>
+      <p>${escapeHtml(content)}</p>
+    </article>
+  `).join('');
+  showView('english-tenses');
+  $('#breadcrumb-current').textContent = `Czasy angielskie / ${tense.name}`;
+  selectTenseTab('exercises');
+}
+
+function selectTenseTab(tab) {
+  const showExercises = tab === 'exercises';
+  $('#tense-exercise-tab').classList.toggle('active', showExercises);
+  $('#tense-theory-tab').classList.toggle('active', !showExercises);
+  $('#tense-exercise-tab').setAttribute('aria-selected', String(showExercises));
+  $('#tense-theory-tab').setAttribute('aria-selected', String(!showExercises));
+  $('#tense-exercises').classList.toggle('hidden', !showExercises);
+  $('#tense-theory').classList.toggle('hidden', showExercises);
+  if (showExercises) renderTenseExercise();
+}
+
+function renderTenseExercise() {
+  const tense = ENGLISH_TENSES.find((item) => item.id === activeTenseId);
+  if (!tense) return;
+  const exercise = tense.exercises[activeTenseExerciseIndex];
+  $('#tense-exercise-count').textContent = `Zadanie ${activeTenseExerciseIndex + 1} z ${tense.exercises.length}`;
+  $('#tense-exercise-level').textContent = exercise.level;
+  $('#tense-exercise-level').className = `level-badge level-${exercise.level.toLowerCase()}`;
+  $('#tense-exercise-instruction').textContent = exercise.instruction;
+  $('#tense-exercise-prompt').textContent = exercise.prompt;
+  $('#tense-answer-form').reset();
+  $('#tense-answer-form').classList.remove('hidden');
+  $('#tense-answer').disabled = false;
+  $('#tense-check-answer').disabled = false;
+  $('#tense-exercise-feedback').className = 'tense-exercise-feedback hidden';
+  $('#tense-exercise-feedback').textContent = '';
+  $('#tense-retry').classList.add('hidden');
+  $('#tense-next').classList.add('hidden');
+  tenseAnswerChecked = false;
+}
+
+function normalizeTenseAnswer(answer) {
+  return answer.toLowerCase().replace(/[’‘]/g, "'").replace(/[.!?]+$/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function checkTenseAnswer(event) {
+  event.preventDefault();
+  if (tenseAnswerChecked) return;
+  const tense = ENGLISH_TENSES.find((item) => item.id === activeTenseId);
+  if (!tense) return;
+  const exercise = tense.exercises[activeTenseExerciseIndex];
+  const answer = normalizeTenseAnswer($('#tense-answer').value);
+  const isCorrect = exercise.answers.some((accepted) => normalizeTenseAnswer(accepted) === answer);
+  const feedback = $('#tense-exercise-feedback');
+  const expectedAnswers = exercise.answers.join(' / ');
+  feedback.className = `tense-exercise-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+  feedback.textContent = isCorrect
+    ? `Dobrze! ${exercise.tip}`
+    : `Jeszcze nie. Poprawna odpowiedź: ${expectedAnswers}. ${exercise.tip}`;
+  $('#tense-answer').disabled = true;
+  $('#tense-check-answer').disabled = true;
+  $('#tense-next').classList.remove('hidden');
+  $('#tense-retry').classList.toggle('hidden', isCorrect);
+  $('#tense-next').textContent = activeTenseExerciseIndex === tense.exercises.length - 1
+    ? 'Zacznij od początku ↻'
+    : 'Następne zadanie →';
+  tenseAnswerChecked = true;
+}
+
+function nextTenseExercise() {
+  const tense = ENGLISH_TENSES.find((item) => item.id === activeTenseId);
+  if (!tense) return;
+  activeTenseExerciseIndex = (activeTenseExerciseIndex + 1) % tense.exercises.length;
+  renderTenseExercise();
+}
+
+function retryTenseExercise() {
+  $('#tense-answer').value = '';
+  $('#tense-answer').disabled = false;
+  $('#tense-check-answer').disabled = false;
+  $('#tense-exercise-feedback').className = 'tense-exercise-feedback hidden';
+  $('#tense-exercise-feedback').textContent = '';
+  $('#tense-retry').classList.add('hidden');
+  $('#tense-next').classList.add('hidden');
+  tenseAnswerChecked = false;
+  $('#tense-answer').focus();
+}
+
+function showTenseCatalog() {
+  activeTenseId = null;
+  $('#tense-lesson').classList.add('hidden');
+  $('#tense-catalog').classList.remove('hidden');
+  renderTenseCatalog();
+  showView('english-tenses');
+}
+
 function showView(name) {
   homeView.classList.toggle('hidden', name !== 'home');
   deckView.classList.toggle('hidden', name !== 'deck');
   studyView.classList.toggle('hidden', name !== 'study');
   testView.classList.toggle('hidden', name !== 'test');
+  englishTensesView.classList.toggle('hidden', name !== 'english-tenses');
   document.querySelectorAll('.nav-link').forEach((link) => link.classList.toggle('active', link.dataset.view === (name === 'deck' ? 'home' : name === 'test' ? 'study' : name)));
   if (name === 'home') $('#breadcrumb-current').textContent = 'Moje talie';
   if (name === 'study') $('#breadcrumb-current').textContent = 'Nauka';
   if (name === 'test') $('#breadcrumb-current').textContent = 'Sprawdzian';
+  if (name === 'english-tenses' && !activeTenseId) $('#breadcrumb-current').textContent = 'Czasy angielskie';
+  document.querySelector('.main-content').scrollTo({ top: 0, behavior: 'smooth' });
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -1269,9 +1632,16 @@ $('#back-test').addEventListener('click', () => activeDeckId ? openDeck(activeDe
 document.querySelectorAll('.nav-link').forEach((link) => {
   link.addEventListener('click', () => {
     if (link.dataset.view === 'study') showStudySetup();
+    else if (link.dataset.view === 'english-tenses') showTenseCatalog();
     else showView('home');
   });
 });
+$('#back-to-tenses').addEventListener('click', showTenseCatalog);
+$('#tense-exercise-tab').addEventListener('click', () => selectTenseTab('exercises'));
+$('#tense-theory-tab').addEventListener('click', () => selectTenseTab('theory'));
+$('#tense-answer-form').addEventListener('submit', checkTenseAnswer);
+$('#tense-next').addEventListener('click', nextTenseExercise);
+$('#tense-retry').addEventListener('click', retryTenseExercise);
 document.querySelectorAll('[data-close]').forEach((button) => {
   button.addEventListener('click', () => document.getElementById(button.dataset.close).close());
 });

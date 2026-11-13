@@ -1,6 +1,6 @@
 # Fiszki
 
-Responsywna aplikacja do nauki słówek, tworzenia talii i sprawdzianów. Sprawdzian oferuje pięć rodzajów pytań: wpisywanie odpowiedzi, uzupełnianie liter, wybór A–D, prawda/fałsz i tłumaczenie w odwrotnym kierunku. Każda zaznaczona forma pojawia się co najmniej raz; przy większej liczbie form niż wybranych fiszek niektóre fiszki są używane ponownie. Logowanie i synchronizacja danych działają przez Supabase, a zdjęcia słówek można rozpoznawać przez Google Cloud Vision.
+Responsywna aplikacja do nauki słówek, tworzenia talii i sprawdzianów. Sekcja „Czasy angielskie” obejmuje 12 standardowych czasów, teorię zdań twierdzących, przeczących i pytań oraz ćwiczenia z poziomami A1–C2. Sprawdzian oferuje pięć rodzajów pytań: wpisywanie odpowiedzi, uzupełnianie liter, wybór A–D, prawda/fałsz i tłumaczenie w odwrotnym kierunku. Każda zaznaczona forma pojawia się co najmniej raz; przy większej liczbie form niż wybranych fiszek niektóre fiszki są używane ponownie. Logowanie i synchronizacja danych działają przez Supabase, a zdjęcia słówek można rozpoznawać przez Google Cloud Vision.
 
 ## Publikacja na GitHub Pages
 
