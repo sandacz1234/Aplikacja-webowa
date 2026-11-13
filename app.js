@@ -79,7 +79,7 @@ const ENGLISH_TENSES = [
       { level: 'B1', instruction: 'Przetłumacz zdanie na angielski.', prompt: 'Ona pracuje tutaj od pięciu lat.', answers: ['She has been working here for five years.'], tip: 'Dla she użyj has been; for wskazuje okres trwania.' },
       { level: 'B2', instruction: 'Utwórz pytanie.', prompt: 'how long / they / wait?', answers: ['How long have they been waiting?'], tip: 'Po How long użyj have + podmiot + been + -ing.' },
       { level: 'B2', instruction: 'Uzupełnij przeczenie.', prompt: 'He ___ (not / sleep) well lately.', answers: ['hasn’t been sleeping', 'has not been sleeping'], tip: 'He + hasn’t been + czasownik z -ing.' },
-      { level: 'C1', instruction: 'Uzupełnij zdanie, podkreślając długość trwania czynności.', prompt: 'Your hands are dirty. What ___ you ___ (do)?', answers: ['have you been doing'], tip: 'Pytamy o czynność, która doprowadziła do widocznego skutku.' }
+      { level: 'C1', instruction: 'Uzupełnij zdanie, podkreślając długość trwania czynności.', prompt: 'Your hands are dirty. What ___ you ___ (do)?', answers: ['have you been doing'], gapAnswers: [['have', 'been doing']], tip: 'Pytamy o czynność, która doprowadziła do widocznego skutku.' }
     ]
   },
   {
@@ -262,8 +262,6 @@ const englishTensesView = $('#english-tenses-view');
 const authScreen = $('#auth-screen');
 const appShell = $('#app-shell');
 let activeTenseId = null;
-let activeTenseExerciseIndex = 0;
-let tenseAnswerChecked = false;
 
 function setAuthStatus(message, isError = false) {
   const status = $('#auth-status');
@@ -707,7 +705,6 @@ function openTense(tenseId) {
   const tense = ENGLISH_TENSES.find((item) => item.id === tenseId);
   if (!tense) return;
   activeTenseId = tense.id;
-  activeTenseExerciseIndex = 0;
   $('#tense-catalog').classList.add('hidden');
   $('#tense-lesson').classList.remove('hidden');
   $('#tense-title').textContent = tense.name;
@@ -738,74 +735,109 @@ function selectTenseTab(tab) {
   $('#tense-theory-tab').setAttribute('aria-selected', String(!showExercises));
   $('#tense-exercises').classList.toggle('hidden', !showExercises);
   $('#tense-theory').classList.toggle('hidden', showExercises);
-  if (showExercises) renderTenseExercise();
+  if (showExercises) renderTenseExercises();
 }
 
-function renderTenseExercise() {
+function renderTenseExercises() {
   const tense = ENGLISH_TENSES.find((item) => item.id === activeTenseId);
   if (!tense) return;
-  const exercise = tense.exercises[activeTenseExerciseIndex];
-  $('#tense-exercise-count').textContent = `Zadanie ${activeTenseExerciseIndex + 1} z ${tense.exercises.length}`;
-  $('#tense-exercise-level').textContent = exercise.level;
-  $('#tense-exercise-level').className = `level-badge level-${exercise.level.toLowerCase()}`;
-  $('#tense-exercise-instruction').textContent = exercise.instruction;
-  $('#tense-exercise-prompt').textContent = exercise.prompt;
-  $('#tense-answer-form').reset();
-  $('#tense-answer-form').classList.remove('hidden');
-  $('#tense-answer').disabled = false;
-  $('#tense-check-answer').disabled = false;
-  $('#tense-exercise-feedback').className = 'tense-exercise-feedback hidden';
-  $('#tense-exercise-feedback').textContent = '';
-  $('#tense-retry').classList.add('hidden');
-  $('#tense-next').classList.add('hidden');
-  tenseAnswerChecked = false;
+  $('#tense-exercise-count').textContent = `${tense.exercises.length} zadań`;
+  $('#tense-exercise-list').innerHTML = tense.exercises.map((exercise, exerciseIndex) => {
+    let blankIndex = 0;
+    const prompt = exercise.prompt.split('___').map((part, partIndex, parts) => {
+      const text = escapeHtml(part);
+      if (partIndex === parts.length - 1) return text;
+      blankIndex += 1;
+      return `${text}<input class="tense-inline-answer" type="text" data-answer-slot="${blankIndex - 1}" aria-label="Odpowiedź do zadania ${exerciseIndex + 1}, luka ${blankIndex}" autocomplete="off" spellcheck="false">`;
+    }).join('');
+    const answerLine = blankIndex ? '' : `
+      <label class="tense-answer-line" for="tense-answer-${exerciseIndex}">
+        <span>Twoja odpowiedź</span>
+        <input id="tense-answer-${exerciseIndex}" class="tense-inline-answer tense-full-answer" type="text" data-answer-slot="0" autocomplete="off" spellcheck="false">
+      </label>
+    `;
+    return `
+      <article class="tense-exercise-card" data-exercise-index="${exerciseIndex}">
+        <div class="tense-exercise-meta"><span>Zadanie ${exerciseIndex + 1}</span><span class="level-badge level-${exercise.level.toLowerCase()}">${escapeHtml(exercise.level)}</span></div>
+        <p class="tense-exercise-instruction">${escapeHtml(exercise.instruction)}</p>
+        <p class="tense-exercise-prompt">${prompt}</p>
+        ${answerLine}
+        <div class="tense-exercise-footer">
+          <button class="button button-light" type="button" data-check-exercise="${exerciseIndex}">Sprawdź</button>
+          <div class="tense-exercise-feedback hidden" data-exercise-feedback="${exerciseIndex}" role="status" aria-live="polite"></div>
+        </div>
+      </article>
+    `;
+  }).join('');
 }
 
 function normalizeTenseAnswer(answer) {
   return answer.toLowerCase().replace(/[’‘]/g, "'").replace(/[.!?]+$/g, '').replace(/\s+/g, ' ').trim();
 }
 
-function checkTenseAnswer(event) {
-  event.preventDefault();
-  if (tenseAnswerChecked) return;
+function getTenseAnswerVariants(exercise) {
+  const blankCount = (exercise.prompt.match(/___/g) || []).length;
+  if (!blankCount) return exercise.answers.map((answer) => [answer]);
+  if (exercise.gapAnswers) return exercise.gapAnswers;
+  const promptPattern = `^\\s*${exercise.prompt.split('___').map((part) => normalizeTenseAnswer(part).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('([\\s\\S]*?)')}\\s*$`;
+  const pattern = new RegExp(promptPattern, 'i');
+  const variants = [];
+  for (const answer of exercise.answers) {
+    const match = normalizeTenseAnswer(answer).match(pattern);
+    if (match) {
+      variants.push(match.slice(1).map((part) => part.trim()));
+    } else if (blankCount === 1) {
+      variants.push([answer]);
+    } else {
+      const parts = answer.split(/[;,]\s*/);
+      if (parts.length === blankCount) variants.push(parts);
+    }
+  }
+  return variants;
+}
+
+function checkTenseExercise(exerciseIndex) {
   const tense = ENGLISH_TENSES.find((item) => item.id === activeTenseId);
   if (!tense) return;
-  const exercise = tense.exercises[activeTenseExerciseIndex];
-  const answer = normalizeTenseAnswer($('#tense-answer').value);
-  const isCorrect = exercise.answers.some((accepted) => normalizeTenseAnswer(accepted) === answer);
-  const feedback = $('#tense-exercise-feedback');
-  const expectedAnswers = exercise.answers.join(' / ');
+  const exercise = tense.exercises[exerciseIndex];
+  const card = $('#tense-exercise-list').querySelector(`[data-exercise-index="${exerciseIndex}"]`);
+  if (!exercise || !card) return;
+  const answerInputs = [...card.querySelectorAll('[data-answer-slot]')];
+  if (answerInputs.some((input) => !input.value.trim())) {
+    answerInputs.find((input) => !input.value.trim()).focus();
+    return;
+  }
+  const answers = answerInputs.map((input) => normalizeTenseAnswer(input.value));
+  const variants = getTenseAnswerVariants(exercise);
+  const isCorrect = variants.some((variant) => variant.length === answers.length
+    && variant.every((part, index) => normalizeTenseAnswer(part) === answers[index]));
+  answerInputs.forEach((input) => {
+    input.classList.toggle('answer-correct', isCorrect);
+    input.classList.toggle('answer-incorrect', !isCorrect);
+  });
+  const feedback = card.querySelector(`[data-exercise-feedback="${exerciseIndex}"]`);
   feedback.className = `tense-exercise-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
-  feedback.textContent = isCorrect
-    ? `Dobrze! ${exercise.tip}`
-    : `Jeszcze nie. Poprawna odpowiedź: ${expectedAnswers}. ${exercise.tip}`;
-  $('#tense-answer').disabled = true;
-  $('#tense-check-answer').disabled = true;
-  $('#tense-next').classList.remove('hidden');
-  $('#tense-retry').classList.toggle('hidden', isCorrect);
-  $('#tense-next').textContent = activeTenseExerciseIndex === tense.exercises.length - 1
-    ? 'Zacznij od początku ↻'
-    : 'Następne zadanie →';
-  tenseAnswerChecked = true;
+  if (isCorrect) {
+    feedback.textContent = `Dobrze! ${exercise.tip}`;
+  } else {
+    const expected = variants[0] || exercise.answers;
+    feedback.textContent = `Poprawna odpowiedź: ${expected.join(' / ')}. ${exercise.tip}`;
+  }
 }
 
-function nextTenseExercise() {
+function checkAllTenseExercises() {
   const tense = ENGLISH_TENSES.find((item) => item.id === activeTenseId);
   if (!tense) return;
-  activeTenseExerciseIndex = (activeTenseExerciseIndex + 1) % tense.exercises.length;
-  renderTenseExercise();
-}
-
-function retryTenseExercise() {
-  $('#tense-answer').value = '';
-  $('#tense-answer').disabled = false;
-  $('#tense-check-answer').disabled = false;
-  $('#tense-exercise-feedback').className = 'tense-exercise-feedback hidden';
-  $('#tense-exercise-feedback').textContent = '';
-  $('#tense-retry').classList.add('hidden');
-  $('#tense-next').classList.add('hidden');
-  tenseAnswerChecked = false;
-  $('#tense-answer').focus();
+  for (let index = 0; index < tense.exercises.length; index += 1) {
+    const card = $('#tense-exercise-list').querySelector(`[data-exercise-index="${index}"]`);
+    const emptyInput = [...card.querySelectorAll('[data-answer-slot]')].find((input) => !input.value.trim());
+    if (emptyInput) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      emptyInput.focus();
+      return;
+    }
+  }
+  tense.exercises.forEach((exercise, index) => checkTenseExercise(index));
 }
 
 function showTenseCatalog() {
@@ -1639,9 +1671,11 @@ document.querySelectorAll('.nav-link').forEach((link) => {
 $('#back-to-tenses').addEventListener('click', showTenseCatalog);
 $('#tense-exercise-tab').addEventListener('click', () => selectTenseTab('exercises'));
 $('#tense-theory-tab').addEventListener('click', () => selectTenseTab('theory'));
-$('#tense-answer-form').addEventListener('submit', checkTenseAnswer);
-$('#tense-next').addEventListener('click', nextTenseExercise);
-$('#tense-retry').addEventListener('click', retryTenseExercise);
+$('#tense-exercise-list').addEventListener('click', (event) => {
+  const button = event.target.closest('[data-check-exercise]');
+  if (button) checkTenseExercise(Number(button.dataset.checkExercise));
+});
+$('#tense-check-all').addEventListener('click', checkAllTenseExercises);
 document.querySelectorAll('[data-close]').forEach((button) => {
   button.addEventListener('click', () => document.getElementById(button.dataset.close).close());
 });

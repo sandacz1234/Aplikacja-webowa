@@ -223,21 +223,11 @@
             <button class="tense-tab" id="tense-theory-tab" type="button" role="tab" aria-selected="false" aria-controls="tense-theory">Teoria</button>
           </div>
           <div id="tense-exercises" class="tense-panel" role="tabpanel" aria-labelledby="tense-exercise-tab">
-            <div class="tense-exercise-card">
-              <div class="tense-exercise-meta"><span id="tense-exercise-count"></span><span id="tense-exercise-level" class="level-badge"></span></div>
-              <p id="tense-exercise-instruction" class="tense-exercise-instruction"></p>
-              <p id="tense-exercise-prompt" class="tense-exercise-prompt"></p>
-              <form id="tense-answer-form" class="tense-answer-form">
-                <label for="tense-answer">Twoja odpowiedź</label>
-                <input id="tense-answer" type="text" autocomplete="off" spellcheck="false" placeholder="Wpisz zdanie po angielsku…" required>
-                <button class="button button-primary" id="tense-check-answer" type="submit">Sprawdź odpowiedź</button>
-              </form>
-              <div id="tense-exercise-feedback" class="tense-exercise-feedback hidden" role="status" aria-live="polite"></div>
-              <div class="tense-exercise-actions">
-                <button class="button button-light hidden" id="tense-retry" type="button">Spróbuj ponownie</button>
-                <button class="button button-primary hidden" id="tense-next" type="button">Następne zadanie →</button>
-              </div>
+            <div class="tense-exercise-toolbar">
+              <p id="tense-exercise-count" class="tense-exercise-count"></p>
+              <button class="button button-primary" id="tense-check-all" type="button">Sprawdź wszystkie odpowiedzi</button>
             </div>
+            <div id="tense-exercise-list" class="tense-exercise-list"></div>
           </div>
           <div id="tense-theory" class="tense-panel hidden" role="tabpanel" aria-labelledby="tense-theory-tab">
             <div id="tense-theory-content" class="tense-theory-grid"></div>
