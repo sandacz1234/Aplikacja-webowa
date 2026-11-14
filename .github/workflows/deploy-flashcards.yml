@@ -32,7 +32,7 @@ jobs:
         run: |
           set -eu
           mkdir -p dist
-          cp index.html style.css app.js .nojekyll dist/
+          cp index.html style.css app.js .nojekyll sitemap.xml dist/
           # Publish the public site even before the owner finishes Supabase setup.
           if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_ANON_KEY" ]; then
             node -e 'process.stdout.write(`window.FLASHCARDS_CONFIG = ${JSON.stringify({supabaseUrl: process.env.SUPABASE_URL, supabaseAnonKey: process.env.SUPABASE_ANON_KEY})};\n`)' > dist/config.js
@@ -40,7 +40,7 @@ jobs:
             printf "window.FLASHCARDS_CONFIG = { supabaseUrl: '', supabaseAnonKey: '' };\n" > dist/config.js
             echo "::warning::The public website is deployed, but account login requires the owner to set SUPABASE_URL and SUPABASE_ANON_KEY."
           fi
-          printf 'User-agent: *\nDisallow: /\n' > dist/robots.txt
+          printf 'User-agent: *\nAllow: /\nSitemap: https://sandacz1234.github.io/Aplikacja-webowa/sitemap.xml\n' > dist/robots.txt
 
       - name: Upload website artifact
         uses: actions/upload-pages-artifact@v3

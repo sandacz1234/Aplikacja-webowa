@@ -6,7 +6,7 @@ Responsywna aplikacja do nauki słówek, tworzenia talii i sprawdzianów. Sekcja
 
 Workflow `.github/workflows/deploy-flashcards.yml` publikuje stronę po wysłaniu zmian na `main` lub `master`. Repozytorium jest publiczne, więc opublikowaną stronę może otworzyć każdy.
 
-Po włączeniu GitHub Pages strona będzie dostępna pod adresem: [sandacz1234.github.io/Aplikacja-webowa](https://sandacz1234.github.io/Aplikacja-webowa/).
+Po włączeniu GitHub Pages strona będzie dostępna pod adresem: [SzandFiszki](https://sandacz1234.github.io/Aplikacja-webowa/). Witryna udostępnia robotom wyszukiwarek stronę główną i mapę witryny. Pojawienie się w wynikach wyszukiwania zależy od wyszukiwarki i może zająć trochę czasu.
 
 1. Utwórz projekt Supabase i uruchom plik `supabase/schema.sql` w SQL Editorze projektu.
 2. Skopiuj URL projektu oraz publiczny klucz `anon`/publishable.
