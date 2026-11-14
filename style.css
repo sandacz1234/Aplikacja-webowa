@@ -371,13 +371,14 @@ html, body { width: 100%; height: 100%; min-height: 100%; overflow: hidden; }
 .tense-tab.active::after { position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: var(--green); content: ''; }
 .tense-exercise-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
 .tense-exercise-count { margin: 0; color: #89918c; font-size: 11px; }
-.tense-exercise-links { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 15px; }
-.tense-exercise-link { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 9px; border: 1px solid #e6ebe7; border-radius: 7px; background: #fff; color: #758078; }
+.tense-exercise-links { display: grid; gap: 9px; margin-bottom: 18px; }
+.tense-level-group { display: grid; grid-template-columns: 35px minmax(0, 1fr); align-items: center; gap: 9px; }
+.tense-level-label { color: #718078; font: 700 10px Manrope, sans-serif; }
+.tense-level-buttons { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px; }
+.tense-exercise-link { display: inline-flex; align-items: center; justify-content: center; min-height: 32px; padding: 0 8px; border: 1px solid #e6ebe7; border-radius: 7px; background: #fff; color: #758078; }
 .tense-exercise-link:hover { border-color: #b7d0c1; background: #f7faf7; }
 .tense-exercise-link.active { border-color: var(--green); background: #edf5f1; color: var(--green-dark); }
 .tense-exercise-link span { font-size: 10px; font-weight: 700; }
-.tense-exercise-link small { color: #929a95; font-size: 9px; }
-.tense-exercise-link.active small { color: var(--green); }
 .tense-exercise-list { display: grid; gap: 12px; }
 .tense-exercise-card { width: 100%; padding: 21px; border: 1px solid #ecefeb; border-radius: 12px; background: #fff; }
 .tense-exercise-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #919a94; font-size: 10px; }
@@ -426,8 +427,9 @@ html, body { width: 100%; height: 100%; min-height: 100%; overflow: hidden; }
   .tense-lesson-heading h1 { font-size: 28px; }
   .tense-exercise-card { padding: 19px; }
   .tense-exercise-toolbar { align-items: flex-start; flex-direction: column; }
-  .tense-exercise-links { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
-  .tense-exercise-link { justify-content: center; gap: 4px; padding: 0 4px; }
+  .tense-level-group { grid-template-columns: 30px minmax(0, 1fr); gap: 6px; }
+  .tense-level-buttons { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
+  .tense-exercise-link { padding: 0 4px; }
   .tense-exercise-footer { grid-template-columns: 1fr; }
   .tense-inline-answer { width: 110px; }
 }

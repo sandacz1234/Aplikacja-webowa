@@ -386,8 +386,131 @@ const EXTRA_TENSE_EXERCISES = {
   ]
 };
 
+const TENSE_PRACTICE_CASES = [
+  { subject: 'I', thirdPerson: false, base: 'complete', third: 'completes', past: 'completed', participle: 'completed', ing: 'completing', object: 'a report' },
+  { subject: 'Maya', thirdPerson: true, base: 'buy', third: 'buys', past: 'bought', participle: 'bought', ing: 'buying', object: 'fresh vegetables' },
+  { subject: 'The students', thirdPerson: false, base: 'write', third: 'writes', past: 'wrote', participle: 'written', ing: 'writing', object: 'short stories' },
+  { subject: 'He', thirdPerson: true, base: 'take', third: 'takes', past: 'took', participle: 'taken', ing: 'taking', object: 'photos of birds' },
+  { subject: 'We', thirdPerson: false, base: 'see', third: 'sees', past: 'saw', participle: 'seen', ing: 'seeing', object: 'a doctor' },
+  { subject: 'Your manager', thirdPerson: true, base: 'choose', third: 'chooses', past: 'chose', participle: 'chosen', ing: 'choosing', object: 'a new supplier' },
+  { subject: 'My neighbours', thirdPerson: false, base: 'build', third: 'builds', past: 'built', participle: 'built', ing: 'building', object: 'a wooden fence' },
+  { subject: 'You', thirdPerson: false, base: 'drive', third: 'drives', past: 'drove', participle: 'driven', ing: 'driving', object: 'the same route' },
+  { subject: 'The players', thirdPerson: false, base: 'begin', third: 'begins', past: 'began', participle: 'begun', ing: 'beginning', object: 'their warm-up' },
+  { subject: 'Ella', thirdPerson: true, base: 'teach', third: 'teaches', past: 'taught', participle: 'taught', ing: 'teaching', object: 'science' }
+];
+const TENSE_PRACTICE_TIMES = {
+  'present-simple': ['every Monday', 'at the weekend', 'before work', 'after school', 'once a month', 'on most weekdays', 'in the spring', 'every morning', 'after practice', 'on Tuesdays'],
+  'present-continuous': ['right now', 'at this moment', 'today', 'this week', 'currently', 'at the moment', 'these days', 'right now', 'this afternoon', 'for the time being'],
+  'present-perfect': ['already', 'so far this week', 'just', 'twice this month', 'yet', 'recently', 'three times so far', 'already today', 'this year', 'just this morning'],
+  'present-perfect-continuous': ['for two hours', 'since early morning', 'all afternoon', 'for several weeks', 'since Monday', 'for a long time', 'all day', 'since the start of term', 'for three months', 'lately'],
+  'past-simple': ['yesterday', 'last Saturday', 'two days ago', 'in 2022', 'last month', 'on Monday', 'a week ago', 'yesterday afternoon', 'last winter', 'in the morning'],
+  'past-continuous': ['at eight yesterday', 'when the phone rang', 'while the rain was falling', 'at this time last week', 'when you arrived', 'all evening yesterday', 'as the sun was setting', 'at noon yesterday', 'when the game started', 'while everyone was waiting'],
+  'past-perfect': ['before the guests arrived', 'by the time lunch began', 'before the shop closed', 'when the meeting started', 'before we got there', 'by the time the bell rang', 'before the deadline', 'when the teacher came in', 'before the trip began', 'by the time it got dark'],
+  'past-perfect-continuous': ['for an hour before lunch', 'for weeks before the move', 'all morning before the call', 'for months before the launch', 'since dawn before the storm', 'for hours before the break', 'for a year before the change', 'all day before the guests arrived', 'for weeks before the race', 'for months before the inspection'],
+  'future-simple': ['tomorrow', 'next weekend', 'later today', 'next month', 'soon', 'on Friday', 'in a few days', 'after the lesson', 'next year', 'this evening'],
+  'future-continuous': ['at this time tomorrow', 'at nine tonight', 'all afternoon tomorrow', 'when you arrive', 'this time next week', 'at noon on Friday', 'during the journey tomorrow', 'at eight next Monday', 'while you are away', 'all morning on Saturday'],
+  'future-perfect': ['by tomorrow', 'by the end of the week', 'before the guests arrive', 'by next month', 'by the time you return', 'before Friday evening', 'by the end of this year', 'by noon tomorrow', 'before the course ends', 'by next summer'],
+  'future-perfect-continuous': ['for two hours by noon', 'for a year by next May', 'for weeks by the deadline', 'for three months by June', 'for hours by the time you arrive', 'for a decade by 2030', 'for six months by autumn', 'for days by the weekend', 'for a year by the next review', 'for several hours by midnight']
+};
+const TENSE_LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
+function getPracticeAuxiliary(tenseId, practiceCase) {
+  const isThirdPerson = practiceCase.thirdPerson;
+  if (tenseId === 'present-simple') return isThirdPerson ? 'does' : 'do';
+  if (tenseId === 'present-continuous') return practiceCase.subject === 'I' ? 'Am' : ['He', 'Maya', 'Ella', 'Your manager'].includes(practiceCase.subject) ? 'Is' : 'Are';
+  if (tenseId === 'present-perfect' || tenseId === 'present-perfect-continuous') return isThirdPerson ? 'Has' : 'Have';
+  if (tenseId === 'past-simple') return 'Did';
+  if (tenseId === 'past-continuous') return ['I', 'He', 'Maya', 'Ella', 'Your manager'].includes(practiceCase.subject) ? 'Was' : 'Were';
+  if (tenseId === 'past-perfect' || tenseId === 'past-perfect-continuous') return 'Had';
+  return 'Will';
+}
+
+function getPracticeVerb(tenseId, practiceCase) {
+  if (tenseId === 'present-simple') return practiceCase.thirdPerson ? practiceCase.third : practiceCase.base;
+  if (tenseId === 'present-continuous') return `${practiceCase.subject === 'I' ? 'am' : ['He', 'Maya', 'Ella', 'Your manager'].includes(practiceCase.subject) ? 'is' : 'are'} ${practiceCase.ing}`;
+  if (tenseId === 'present-perfect') return `${practiceCase.thirdPerson ? 'has' : 'have'} ${practiceCase.participle}`;
+  if (tenseId === 'present-perfect-continuous') return `${practiceCase.thirdPerson ? 'has' : 'have'} been ${practiceCase.ing}`;
+  if (tenseId === 'past-simple') return practiceCase.past;
+  if (tenseId === 'past-continuous') return `${['I', 'He', 'Maya', 'Ella', 'Your manager'].includes(practiceCase.subject) ? 'was' : 'were'} ${practiceCase.ing}`;
+  if (tenseId === 'past-perfect') return `had ${practiceCase.participle}`;
+  if (tenseId === 'past-perfect-continuous') return `had been ${practiceCase.ing}`;
+  if (tenseId === 'future-simple') return `will ${practiceCase.base}`;
+  if (tenseId === 'future-continuous') return `will be ${practiceCase.ing}`;
+  if (tenseId === 'future-perfect') return `will have ${practiceCase.participle}`;
+  return `will have been ${practiceCase.ing}`;
+}
+
+function getPracticeNegative(tenseId, practiceCase) {
+  const subject = practiceCase.subject;
+  const isThirdPerson = practiceCase.thirdPerson;
+  const base = practiceCase.base;
+  const participle = practiceCase.participle;
+  const ing = practiceCase.ing;
+  if (tenseId === 'present-simple') return `${isThirdPerson ? 'does not' : 'do not'} ${base}`;
+  if (tenseId === 'present-continuous') return `${subject === 'I' ? 'am not' : ['He', 'Maya', 'Ella', 'Your manager'].includes(subject) ? 'is not' : 'are not'} ${ing}`;
+  if (tenseId === 'present-perfect') return `${isThirdPerson ? 'has not' : 'have not'} ${participle}`;
+  if (tenseId === 'present-perfect-continuous') return `${isThirdPerson ? 'has not' : 'have not'} been ${ing}`;
+  if (tenseId === 'past-simple') return `did not ${base}`;
+  if (tenseId === 'past-continuous') return `${['I', 'He', 'Maya', 'Ella', 'Your manager'].includes(subject) ? 'was not' : 'were not'} ${ing}`;
+  if (tenseId === 'past-perfect') return `had not ${participle}`;
+  if (tenseId === 'past-perfect-continuous') return `had not been ${ing}`;
+  if (tenseId === 'future-simple') return `will not ${base}`;
+  if (tenseId === 'future-continuous') return `will not be ${ing}`;
+  if (tenseId === 'future-perfect') return `will not have ${participle}`;
+  return `will not have been ${ing}`;
+}
+
+function makePracticeExercise(tense, level, caseIndex) {
+  const practiceCase = TENSE_PRACTICE_CASES[caseIndex];
+  const time = TENSE_PRACTICE_TIMES[tense.id][caseIndex];
+  const verbTag = `(${practiceCase.base})`;
+  const phrase = getPracticeVerb(tense.id, practiceCase);
+  const auxiliary = getPracticeAuxiliary(tense.id, practiceCase);
+  const negative = getPracticeNegative(tense.id, practiceCase);
+  const exercise = { level, answers: [], tip: `Zwróć uwagę na budowę czasu ${tense.name} oraz określenie „${time}”.` };
+
+  if (level === 'A1') {
+    exercise.instruction = 'Uzupełnij zdanie twierdzące poprawną formą czasownika.';
+    exercise.prompt = `${practiceCase.subject} ___ ${verbTag} ${practiceCase.object} ${time}.`;
+    exercise.answers = [phrase];
+  } else if (level === 'A2') {
+    exercise.instruction = 'Uzupełnij zdanie przeczące. Zapisz pełną formę przeczenia.';
+    exercise.prompt = `${practiceCase.subject} ___ (not / ${practiceCase.base}) ${practiceCase.object} ${time}.`;
+    exercise.answers = [negative];
+  } else if (level === 'B1') {
+    exercise.instruction = 'Ułóż pytanie typu yes/no, uzupełniając obie luki.';
+    exercise.prompt = `___ ${practiceCase.subject} ___ ${verbTag} ${practiceCase.object} ${time}?`;
+    exercise.answers = [`${auxiliary}; ${tense.id === 'present-simple' || tense.id === 'past-simple' ? practiceCase.base : phrase.replace(/^(?:am|is|are|has|have|was|were|had|will) /i, '')}`];
+    exercise.gapAnswers = [[auxiliary, tense.id === 'present-simple' || tense.id === 'past-simple' ? practiceCase.base : phrase.replace(/^(?:am|is|are|has|have|was|were|had|will) /i, '')]];
+  } else if (level === 'B2') {
+    exercise.instruction = 'Uzupełnij pytanie szczegółowe poprawnym operatorem i formą czasownika.';
+    exercise.prompt = `Why ___ ${practiceCase.subject} ___ ${verbTag} ${practiceCase.object} ${time}?`;
+    const verbAfterAuxiliary = tense.id === 'present-simple' || tense.id === 'past-simple'
+      ? practiceCase.base
+      : phrase.replace(/^(?:am|is|are|has|have|was|were|had|will) /i, '');
+    exercise.answers = [`${auxiliary}; ${verbAfterAuxiliary}`];
+    exercise.gapAnswers = [[auxiliary, verbAfterAuxiliary]];
+  } else if (level === 'C1') {
+    exercise.instruction = 'Uzupełnij przeczenie w zdaniu opisującym sytuację.';
+    exercise.prompt = `The report indicates that ${practiceCase.subject} ___ (not / ${practiceCase.base}) ${practiceCase.object} ${time}.`;
+    exercise.answers = [negative];
+  } else {
+    exercise.instruction = 'Uzupełnij zdanie w formalnym kontekście, zachowując jego znaczenie.';
+    exercise.prompt = `The written account confirms that ${practiceCase.subject} ___ ${verbTag} ${practiceCase.object} ${time}.`;
+    exercise.answers = [phrase];
+  }
+  return exercise;
+}
+
 ENGLISH_TENSES.forEach((tense) => {
   tense.exercises.push(...EXTRA_TENSE_EXERCISES[tense.id]);
+  for (const level of TENSE_LEVEL_ORDER) {
+    const currentCount = tense.exercises.filter((exercise) => exercise.level === level).length;
+    for (let index = 0; index < 10 - currentCount; index += 1) {
+      tense.exercises.push(makePracticeExercise(tense, level, index));
+    }
+  }
+  tense.exercises.sort((first, second) => TENSE_LEVEL_ORDER.indexOf(first.level) - TENSE_LEVEL_ORDER.indexOf(second.level));
 });
 
 let data = { decks: [] };
@@ -921,12 +1044,23 @@ function selectTenseTab(tab) {
 function renderTenseExercises() {
   const tense = ENGLISH_TENSES.find((item) => item.id === activeTenseId);
   if (!tense) return;
-  $('#tense-exercise-count').textContent = `${tense.exercises.length} zadań`;
-  $('#tense-exercise-links').innerHTML = tense.exercises.map((exercise, exerciseIndex) => `
-    <button class="tense-exercise-link${exerciseIndex === 0 ? ' active' : ''}" id="tense-exercise-link-${exerciseIndex + 1}" type="button" role="tab" aria-selected="${exerciseIndex === 0}" aria-controls="tense-exercise-${exerciseIndex + 1}" data-select-exercise="${exerciseIndex}" aria-label="Otwórz zadanie ${exerciseIndex + 1}, poziom ${exercise.level}">
-      <span>${exerciseIndex + 1}</span><small>${escapeHtml(exercise.level)}</small>
-    </button>
-  `).join('');
+  $('#tense-exercise-count').textContent = `${tense.exercises.length} zadań · 10 na każdy poziom`;
+  $('#tense-exercise-links').innerHTML = TENSE_LEVEL_ORDER.map((level) => {
+    const levelExercises = tense.exercises.map((exercise, index) => ({ exercise, index }))
+      .filter(({ exercise }) => exercise.level === level);
+    return `
+      <section class="tense-level-group" aria-label="Poziom ${level}">
+        <strong class="tense-level-label">${level}</strong>
+        <div class="tense-level-buttons">
+          ${levelExercises.map(({ exercise, index }, levelIndex) => `
+            <button class="tense-exercise-link${index === 0 ? ' active' : ''}" id="tense-exercise-link-${index + 1}" type="button" role="tab" aria-selected="${index === 0}" aria-controls="tense-exercise-${index + 1}" data-select-exercise="${index}" aria-label="Otwórz zadanie ${levelIndex + 1}, poziom ${exercise.level}">
+              <span>${levelIndex + 1}</span>
+            </button>
+          `).join('')}
+        </div>
+      </section>
+    `;
+  }).join('');
   $('#tense-exercise-list').innerHTML = tense.exercises.map((exercise, exerciseIndex) => {
     let blankIndex = 0;
     const prompt = exercise.prompt.split('___').map((part, partIndex, parts) => {
