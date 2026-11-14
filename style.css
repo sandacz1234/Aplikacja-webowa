@@ -369,8 +369,15 @@ html, body { width: 100%; height: 100%; min-height: 100%; overflow: hidden; }
 .tense-tab { position: relative; border: 0; background: transparent; padding: 0 2px 12px; color: #8a938d; font-size: 12px; font-weight: 600; }
 .tense-tab.active { color: var(--green); }
 .tense-tab.active::after { position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: var(--green); content: ''; }
-.tense-exercise-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.tense-exercise-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
 .tense-exercise-count { margin: 0; color: #89918c; font-size: 11px; }
+.tense-exercise-links { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 15px; }
+.tense-exercise-link { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 9px; border: 1px solid #e6ebe7; border-radius: 7px; background: #fff; color: #758078; }
+.tense-exercise-link:hover { border-color: #b7d0c1; background: #f7faf7; }
+.tense-exercise-link.active { border-color: var(--green); background: #edf5f1; color: var(--green-dark); }
+.tense-exercise-link span { font-size: 10px; font-weight: 700; }
+.tense-exercise-link small { color: #929a95; font-size: 9px; }
+.tense-exercise-link.active small { color: var(--green); }
 .tense-exercise-list { display: grid; gap: 12px; }
 .tense-exercise-card { width: 100%; padding: 21px; border: 1px solid #ecefeb; border-radius: 12px; background: #fff; }
 .tense-exercise-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #919a94; font-size: 10px; }
@@ -390,20 +397,37 @@ html, body { width: 100%; height: 100%; min-height: 100%; overflow: hidden; }
 .tense-exercise-feedback { padding: 8px 11px; border-radius: 7px; font-size: 10px; line-height: 1.7; }
 .tense-exercise-feedback.correct { background: #edf5f1; color: #286653; }
 .tense-exercise-feedback.incorrect { background: #fcf0e9; color: #8b5840; }
-.tense-theory-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.tense-theory-card { padding: 18px; border: 1px solid #ecefeb; border-radius: 10px; background: #fff; }
-.tense-theory-card h3 { margin: 0 0 8px; color: #39433d; font-size: 12px; }
-.tense-theory-card p { margin: 0; color: #7d8780; font-size: 11px; line-height: 1.8; }
+.tense-theory-content { display: grid; gap: 22px; padding-bottom: 30px; }
+.tense-theory-overview { position: relative; overflow: hidden; padding: clamp(24px, 4vw, 42px); border: 1px solid #dfeae2; border-radius: 15px; background: radial-gradient(ellipse at 92% 10%, #dceee4 0, transparent 38%), linear-gradient(135deg, #fff, #f3f8f4); }
+.tense-theory-overview .eyebrow, .tense-theory-example .eyebrow { margin-bottom: 8px; }
+.tense-theory-overview h2, .tense-theory-section-heading h2, .tense-theory-example h2 { margin: 0; color: #293a31; font-size: clamp(20px, 2.5vw, 27px); letter-spacing: -.7px; }
+.tense-theory-overview > p:not(.eyebrow) { max-width: 900px; margin: 13px 0 18px; color: #58665d; font-size: 13px; line-height: 1.9; }
+.tense-theory-signals { display: inline-flex; flex-wrap: wrap; gap: 6px; padding: 9px 12px; border: 1px solid #e4ece6; border-radius: 8px; background: #ffffffc9; color: #66736b; font-size: 11px; }
+.tense-theory-signals strong { color: var(--green-dark); }
+.tense-theory-formulas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.tense-theory-card { min-width: 0; padding: 20px; border: 1px solid #e8ede9; border-radius: 11px; background: #fff; }
+.tense-theory-step { display: inline-grid; place-items: center; width: 28px; height: 28px; margin-bottom: 12px; border-radius: 8px; background: #edf5f1; color: var(--green); font: 700 10px Manrope, sans-serif; }
+.tense-theory-card h3 { margin: 0 0 8px; color: #39433d; font-size: 13px; }
+.tense-theory-card p { margin: 0; color: #6f7a72; font-size: 11px; line-height: 1.85; }
+.tense-theory-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.tense-theory-section-heading { grid-column: 1 / -1; padding: 8px 0 3px; }
+.tense-theory-section-heading .eyebrow { margin-bottom: 7px; }
+.tense-theory-detail { display: flex; align-items: flex-start; gap: 14px; padding: clamp(17px, 2.6vw, 24px); }
+.tense-theory-detail .tense-theory-step { flex: 0 0 28px; margin: 0; }
+.tense-theory-example { padding: clamp(22px, 3.5vw, 34px); border-radius: 13px; background: #fff; border: 1px solid #e8ede9; }
+.tense-theory-example > p:last-child { margin: 14px 0 0; color: var(--green-dark); font: 600 14px/2 Manrope, sans-serif; }
 
 @media (max-width: 1000px) {
   .tense-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 600px) {
-  .tense-grid, .tense-theory-grid { grid-template-columns: 1fr; }
+  .tense-grid, .tense-theory-formulas, .tense-theory-details { grid-template-columns: 1fr; }
   .tense-card { min-height: 78px; }
   .tense-lesson-heading h1 { font-size: 28px; }
   .tense-exercise-card { padding: 19px; }
   .tense-exercise-toolbar { align-items: flex-start; flex-direction: column; }
+  .tense-exercise-links { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
+  .tense-exercise-link { justify-content: center; gap: 4px; padding: 0 4px; }
   .tense-exercise-footer { grid-template-columns: 1fr; }
   .tense-inline-answer { width: 110px; }
 }

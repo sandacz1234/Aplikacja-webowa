@@ -117,7 +117,7 @@ const ENGLISH_TENSES = [
       { level: 'A2', instruction: 'Przetłumacz zdanie na angielski.', prompt: 'Dzieci bawiły się, kiedy zaczął padać deszcz.', answers: ['The children were playing when it started to rain.'], tip: 'Dłuższa czynność w tle: were playing.' },
       { level: 'B1', instruction: 'Utwórz pytanie.', prompt: 'what / you / do / at midnight?', answers: ['What were you doing at midnight?'], tip: 'Dla you użyj were przed podmiotem.' },
       { level: 'B1', instruction: 'Uzupełnij przeczenie.', prompt: 'She ___ (not / listen) when the teacher spoke.', answers: ['wasn’t listening', 'was not listening'], tip: 'She + wasn’t + czasownik z -ing.' },
-      { level: 'B2', instruction: 'Uzupełnij obie formy czasowników.', prompt: 'While we ___ (walk) home, it ___ (begin) to snow.', answers: ['were walking; began', 'were walking, began'], tip: 'Czynność trwająca: Past Continuous; krótkie zdarzenie: Past Simple.' }
+      { level: 'B2', instruction: 'Uzupełnij obie formy czasowników.', prompt: 'While we ___ (walk) home, it ___ (begin) to snow.', answers: ['were walking; began', 'were walking, began'], gapAnswers: [['were walking', 'began']], tip: 'Czynność trwająca: Past Continuous; krótkie zdarzenie: Past Simple.' }
     ]
   },
   {
@@ -235,6 +235,160 @@ const ENGLISH_TENSES = [
     ]
   }
 ];
+
+const DETAILED_TENSE_THEORY = {
+  'present-simple': [
+    { title: 'Jak rozpoznać ten czas?', text: 'Present Simple opisuje rutynę, fakty, upodobania i rozkłady. Nie przedstawia czynności trwającej właśnie teraz: I walk to work every day; The train leaves at six.' },
+    { title: 'Pisownia i częste błędy', text: 'W trzeciej osobie dodaj -s: read/reads; spółgłoska+y zmienia się w -ies: study/studies. Po -ch, -sh, -ss, -x dodaj -es: watches.' },
+    { title: 'Czasowniki opisujące stany', text: 'Know, believe, need i belong zwykle nie przyjmują formy ciągłej: I know the answer. Always, usually i often stoją przed zwykłym czasownikiem.' }
+  ],
+  'present-continuous': [
+    { title: 'Czynność teraz i sytuacja tymczasowa', text: 'Present Continuous opisuje czynność teraz, tymczasową sytuację lub zmianę: I am staying with my aunt this week; The days are getting longer.' },
+    { title: 'Jak tworzyć formę -ing?', text: 'Zwykle dodaj -ing: work/working; usuń końcowe nieme e: make/making; czasem podwój spółgłoskę: run/running. Nie pomijaj operatora be.' },
+    { title: 'Kiedy nie stosować formy ciągłej?', text: 'Czasowniki stanu, np. know, like i own, zwykle pozostają w formie prostej: She likes tea. Czas ciągły opisuje też ustalone plany.' }
+  ],
+  'present-perfect': [
+    { title: 'Przeszłość połączona z teraźniejszością', text: 'Present Perfect podkreśla obecny skutek, doświadczenie lub niedokończony okres, bez podawania konkretnej daty: I have lost my key.' },
+    { title: 'Since, for i typowe określenia', text: 'Since podaje początek, for długość. Already i just stoją zwykle przed III formą; yet najczęściej kończy pytanie lub przeczenie.' },
+    { title: 'Past Simple czy Present Perfect?', text: 'Zakończony moment wymaga Past Simple: I visited Rome in 2022. Doświadczenie bez daty to Present Perfect: I have visited Rome.' }
+  ],
+  'present-perfect-continuous': [
+    { title: 'Podkreślanie trwania i procesu', text: 'Czas odpowiada na How long? i podkreśla trwanie albo niedawny skutek: I have been studying for two hours; You look wet.' },
+    { title: 'Budowa i wyrażenia czasu', text: 'Użyj have/has been oraz -ing. Since wskazuje początek, for długość. W pytaniu operator poprzedza podmiot: Have they been waiting?' },
+    { title: 'Ciągły czy prosty Present Perfect?', text: 'Forma ciągła akcentuje proces, prosta rezultat: I have been painting (czynność), I have painted the room (ukończenie). Stany zwykle nie występują w ciągłym.' }
+  ],
+  'past-simple': [
+    { title: 'Zamknięty czas w przeszłości', text: 'Past Simple opisuje zakończone wydarzenia, często z yesterday, last week lub konkretną datą. Pozwala opowiedzieć kolejno: She opened the door and called.' },
+    { title: 'Czasowniki regularne i nieregularne', text: 'Regularne otrzymują -ed: study/studied; nieregularne trzeba zapamiętać: go/went. Po did w pytaniu i przeczeniu wraca forma podstawowa.' },
+    { title: 'Wyjątek: czasownik be', text: 'Be przyjmuje was lub were i nie potrzebuje did: Was she tired? Pozostałe czasowniki używają did w pytaniach i przeczeniach.' }
+  ],
+  'past-continuous': [
+    { title: 'Tło opowieści i przerwana czynność', text: 'Past Continuous opisuje czynność trwającą w przeszłym momencie lub stanowiącą tło: I was cooking when the phone rang.' },
+    { title: 'Was, were i końcówka -ing', text: 'Użyj was dla I/he/she/it, were dla pozostałych osób, a następnie -ing. W pytaniu odwróć kolejność; nie dodawaj did.' },
+    { title: 'Past Continuous a Past Simple', text: 'Forma ciągła przedstawia dłuższe tło, prosta krótkie zdarzenie. When często wprowadza przerwanie; while podkreśla równoległe czynności.' }
+  ],
+  'past-perfect': [
+    { title: 'Co wydarzyło się wcześniej?', text: 'Past Perfect wskazuje wcześniejsze z dwóch przeszłych wydarzeń: When we arrived, the film had started. Ułatwia zrozumienie chronologii opowieści.' },
+    { title: 'Jedna forma had dla każdej osoby', text: 'Każda osoba używa had oraz III formy. Przeczenie to hadn’t; pytanie zaczyna się od Had. Nie łącz tej konstrukcji z did.' },
+    { title: 'Past Perfect czy Past Simple?', text: 'Past Perfect podkreśla wcześniejszą czynność, Past Simple późniejszą: She had locked the door before she left. Before często wyjaśnia kolejność.' }
+  ],
+  'past-perfect-continuous': [
+    { title: 'Jak długo coś trwało przed przeszłym momentem?', text: 'Czas podkreśla długość czynności poprzedzającej przeszłe wydarzenie: They had been driving for hours before they stopped.' },
+    { title: 'Schemat i określenia czasu', text: 'Użyj had been + -ing dla każdej osoby. For wskazuje długość, since początek; pytanie zaczyna się od Had.' },
+    { title: 'Kiedy wybrać formę prostą?', text: 'Past Perfect Continuous podkreśla trwanie; Past Perfect rezultat: She had been writing for hours, ale had written three pages.' }
+  ],
+  'future-simple': [
+    { title: 'Decyzje, obietnice i przewidywania', text: 'Will wyraża spontaniczną decyzję, ofertę, obietnicę lub opinię o przyszłości. Po will zawsze występuje czasownik w formie podstawowej.' },
+    { title: 'Pytania i przeczenia', text: 'Will jest niezmienne: Will they come? Przeczenie to won’t; skrót twierdzący to ’ll. Nie dodawaj końcówki -s.' },
+    { title: 'Will czy going to?', text: 'Will często oznacza decyzję podjętą teraz; going to wcześniejszy zamiar lub przewidywanie oparte na dowodach: Look at those clouds!' }
+  ],
+  'future-continuous': [
+    { title: 'Czynność w toku w przyszłym momencie', text: 'Future Continuous pokazuje czynność trwającą o określonej porze: At nine tomorrow I will be taking an exam. Może też uprzejmie pytać o plany.' },
+    { title: 'Budowa i pytania', text: 'Schemat to will be + -ing. Przeczenie: won’t be working; pytanie: Will you be working? Konstrukcja nie zmienia się zależnie od osoby.' },
+    { title: 'Różnica względem Future Simple', text: 'Future Simple zapowiada wydarzenie lub decyzję; Future Continuous podkreśla trwanie: I will call at eight, ale I will be working at eight.' }
+  ],
+  'future-perfect': [
+    { title: 'Ukończenie przed terminem', text: 'Future Perfect opisuje rezultat gotowy do przyszłego terminu: By Friday I will have sent the report. By wskazuje granicę czasu.' },
+    { title: 'Schemat z trzecią formą', text: 'Użyj will have i III formy, niezależnie od osoby. Pytanie zaczyna się od Will; przeczenie tworzymy przez won’t have.' },
+    { title: 'Nie myl zakończenia z trwaniem', text: 'Future Perfect akcentuje ukończenie: she will have written the book. Future Perfect Continuous podkreśla długość: she will have been writing for a year.' }
+  ],
+  'future-perfect-continuous': [
+    { title: 'Czas trwania do przyszłego punktu', text: 'Czas podaje długość czynności do przyszłej granicy: By May, he will have been living here for ten years.' },
+    { title: 'Długa, ale regularna konstrukcja', text: 'Dla każdej osoby użyj will have been + -ing. For wskazuje długość; by lub by the time wyznacza przyszły punkt.' },
+    { title: 'Wybór między perfect a perfect continuous', text: 'Future Perfect podkreśla rezultat, a Future Perfect Continuous — czas trwania: I will have repaired the car albo I will have been repairing it for hours.' }
+  ]
+};
+
+const EXTRA_TENSE_EXERCISES = {
+  'present-simple': [
+    { level: 'A1', instruction: 'Uzupełnij zdanie poprawną formą czasownika.', prompt: 'My sister ___ (get up) at seven every day.', answers: ['gets up'], tip: 'W 3. osobie liczby pojedynczej czasownik get otrzymuje końcówkę -s.' },
+    { level: 'A2', instruction: 'Uzupełnij pytanie właściwym operatorem.', prompt: '___ your friends ___ (play) basketball after school?', answers: ['Do; play', 'Do / play'], gapAnswers: [['Do', 'play']], tip: 'Dla friends użyj Do, a czasownik pozostaw w formie podstawowej.' },
+    { level: 'B1', instruction: 'Uzupełnij przeczenie odpowiednią formą czasownika.', prompt: 'Water ___ (not / boil) at 50 degrees Celsius.', answers: ['doesn’t boil', 'does not boil'], tip: 'To ogólny fakt; dla water użyj doesn’t + forma podstawowa.' },
+    { level: 'B2', instruction: 'Uzupełnij zdanie odpowiednim przysłówkiem i formą czasownika.', prompt: 'He is very reliable; he ___ (always / arrive) on time.', answers: ['always arrives'], tip: 'Always zwykle stoi przed czasownikiem głównym; dla he dodaj -s.' },
+    { level: 'C1', instruction: 'Uzupełnij zdanie poprawną formą czasownika opisującego stan.', prompt: 'This recipe ___ (contain) three kinds of cheese.', answers: ['contains'], tip: 'Czasownik opisuje stałą właściwość, dlatego używamy Present Simple.' }
+  ],
+  'present-continuous': [
+    { level: 'A1', instruction: 'Uzupełnij zdanie formą czasownika w nawiasie.', prompt: 'The dog ___ (sleep) on the sofa at the moment.', answers: ['is sleeping'], tip: 'The dog to it: użyj is + czasownika z -ing.' },
+    { level: 'A2', instruction: 'Uzupełnij pytanie właściwą formą czasownika.', prompt: '___ the students ___ (prepare) for the test now?', answers: ['Are; preparing', 'Are / preparing'], gapAnswers: [['Are', 'preparing']], tip: 'Students to liczba mnoga, dlatego pytanie zaczyna się od Are.' },
+    { level: 'B1', instruction: 'Uzupełnij przeczenie w Present Continuous.', prompt: 'I ___ (not / use) my laptop right now.', answers: ['am not using'], tip: 'Dla I użyj am not + czasownika z -ing.' },
+    { level: 'B2', instruction: 'Uzupełnij zdanie opisujące ustalony plan.', prompt: 'We ___ (meet) the client tomorrow afternoon.', answers: ['are meeting'], tip: 'Present Continuous może opisywać ustalone plany na bliską przyszłość.' },
+    { level: 'C1', instruction: 'Uzupełnij zdanie poprawną formą czasownika.', prompt: 'Why ___ you ___ (wear) a coat indoors today?', answers: ['are; wearing', 'are / wearing'], gapAnswers: [['are', 'wearing']], tip: 'Pytanie tworzymy przez are + podmiot + czasownik z -ing.' }
+  ],
+  'present-perfect': [
+    { level: 'A2', instruction: 'Uzupełnij zdanie formą Present Perfect.', prompt: 'They ___ (not / finish) the project yet.', answers: ['haven’t finished', 'have not finished'], tip: 'Dla they użyj haven’t + III formy finished.' },
+    { level: 'B1', instruction: 'Uzupełnij pytanie właściwą formą czasownika.', prompt: '___ Mark ever ___ (ride) a horse?', answers: ['Has; ridden', 'Has / ridden'], gapAnswers: [['Has', 'ridden']], tip: 'Mark używa has, a III forma ride to ridden.' },
+    { level: 'B1', instruction: 'Uzupełnij zdanie słowem already i poprawną formą czasownika.', prompt: 'I ___ (already / send) the invitation.', answers: ['have already sent'], tip: 'Already stoi między have a III formą sent.' },
+    { level: 'B2', instruction: 'Uzupełnij zdanie właściwą formą czasownika.', prompt: 'Our neighbours ___ (just / move) into the house next door.', answers: ['have just moved'], tip: 'Dla neighbours użyj have; just stoi przed III formą.' },
+    { level: 'C1', instruction: 'Uzupełnij zdanie poprawną formą czasownika.', prompt: 'The company ___ (not / announce) its decision so far.', answers: ['hasn’t announced', 'has not announced'], tip: 'Company jest w liczbie pojedynczej, dlatego użyj has not.' }
+  ],
+  'present-perfect-continuous': [
+    { level: 'B1', instruction: 'Uzupełnij zdanie formą Present Perfect Continuous.', prompt: 'It ___ (rain) since early morning.', answers: ['has been raining'], tip: 'Dla it użyj has been + czasownika z -ing.' },
+    { level: 'B1', instruction: 'Uzupełnij pytanie o czas trwania czynności.', prompt: 'How long ___ Maya ___ (learn) French?', answers: ['has; been learning', 'has / been learning'], gapAnswers: [['has', 'been learning']], tip: 'Maya używa has; konstrukcja czasu to has been + -ing.' },
+    { level: 'B2', instruction: 'Uzupełnij przeczenie odpowiednią formą.', prompt: 'We ___ (not / wait) for very long.', answers: ['haven’t been waiting', 'have not been waiting'], tip: 'Dla we użyj haven’t been + czasownika z -ing.' },
+    { level: 'C1', instruction: 'Uzupełnij zdanie, zwracając uwagę na widoczny skutek.', prompt: 'Your eyes are red. ___ you ___ (cry)?', answers: ['Have; been crying', 'Have / been crying'], gapAnswers: [['Have', 'been crying']], tip: 'Pytamy o czynność, której skutek widać teraz.' },
+    { level: 'C2', instruction: 'Uzupełnij zdanie, podkreślając trwający proces.', prompt: 'Researchers ___ (investigate) the issue for several months.', answers: ['have been investigating'], tip: 'Czynność rozpoczęła się wcześniej i nadal trwa.' }
+  ],
+  'past-simple': [
+    { level: 'A1', instruction: 'Uzupełnij zdanie poprawną formą czasownika.', prompt: 'Lena ___ (visit) her grandparents on Sunday.', answers: ['visited'], tip: 'Regularny czasownik visit w Past Simple otrzymuje końcówkę -ed.' },
+    { level: 'A2', instruction: 'Uzupełnij pytanie właściwym operatorem i czasownikiem.', prompt: '___ your team ___ (win) the match yesterday?', answers: ['Did; win', 'Did / win'], gapAnswers: [['Did', 'win']], tip: 'Po Did czasownik win pozostaje w formie podstawowej.' },
+    { level: 'B1', instruction: 'Uzupełnij przeczenie.', prompt: 'I ___ (not / understand) the instructions at first.', answers: ['didn’t understand', 'did not understand'], tip: 'Po didn’t użyj formy podstawowej understand.' },
+    { level: 'B2', instruction: 'Uzupełnij zdanie odpowiednią formą czasownika nieregularnego.', prompt: 'The museum ___ (close) earlier than usual last Monday.', answers: ['closed'], tip: 'Close jest regularne: w Past Simple dodajemy -d.' },
+    { level: 'C1', instruction: 'Uzupełnij pytanie o zakończone wydarzenie.', prompt: 'Where ___ the explorers ___ (find) the ancient map?', answers: ['did; find', 'did / find'], gapAnswers: [['did', 'find']], tip: 'Po did użyj formy podstawowej find.' }
+  ],
+  'past-continuous': [
+    { level: 'A2', instruction: 'Uzupełnij zdanie formą Past Continuous.', prompt: 'At this time yesterday, Ella ___ (travel) to work.', answers: ['was travelling', 'was traveling'], tip: 'Ella używa was + czasownika z -ing.' },
+    { level: 'B1', instruction: 'Uzupełnij pytanie właściwą formą czasownika.', prompt: 'What ___ the neighbours ___ (do) when you called?', answers: ['were; doing', 'were / doing'], gapAnswers: [['were', 'doing']], tip: 'Neighbours to liczba mnoga: were + doing.' },
+    { level: 'B1', instruction: 'Uzupełnij przeczenie.', prompt: 'The children ___ (not / sleep) when the storm began.', answers: ['weren’t sleeping', 'were not sleeping'], tip: 'Dla the children użyj weren’t + czasownika z -ing.' },
+    { level: 'B2', instruction: 'Uzupełnij zdanie opisujące dwie równoczesne czynności.', prompt: 'While I ___ (cook), my brother was setting the table.', answers: ['was cooking'], tip: 'Czynność trwająca w tle jest w Past Continuous.' },
+    { level: 'C1', instruction: 'Uzupełnij zdanie właściwą formą czasownika.', prompt: 'The audience ___ (talk) when the lights suddenly went out.', answers: ['were talking'], tip: 'Czynność trwała w chwili, gdy wydarzyło się krótkie zdarzenie.' }
+  ],
+  'past-perfect': [
+    { level: 'B1', instruction: 'Uzupełnij zdanie formą Past Perfect.', prompt: 'After they ___ (book) the tickets, they reserved a hotel.', answers: ['had booked'], tip: 'Rezerwacja biletów nastąpiła przed rezerwacją hotelu.' },
+    { level: 'B2', instruction: 'Uzupełnij pytanie właściwą formą czasownika.', prompt: '___ the guests ___ (leave) before the speech began?', answers: ['Had; left', 'Had / left'], gapAnswers: [['Had', 'left']], tip: 'Pytanie tworzymy przez Had + podmiot + III formę.' },
+    { level: 'B2', instruction: 'Uzupełnij przeczenie.', prompt: 'She ___ (not / hear) the news before the meeting.', answers: ['hadn’t heard', 'had not heard'], tip: 'Po hadn’t użyj III formy heard.' },
+    { level: 'C1', instruction: 'Uzupełnij zdanie z already.', prompt: 'The film ___ (already / start) when we reached the cinema.', answers: ['had already started'], tip: 'Film zaczął się przed naszym dotarciem.' },
+    { level: 'C2', instruction: 'Uzupełnij zdanie właściwą formą czasownika.', prompt: 'By 2019, the architect ___ (design) several award-winning buildings.', answers: ['had designed'], tip: 'By 2019 wskazuje wcześniejszy moment w przeszłości.' }
+  ],
+  'past-perfect-continuous': [
+    { level: 'B2', instruction: 'Uzupełnij zdanie w Past Perfect Continuous.', prompt: 'He ___ (train) for months before the competition.', answers: ['had been training'], tip: 'Trening trwał przez pewien czas przed zawodami.' },
+    { level: 'B2', instruction: 'Uzupełnij pytanie o czas trwania czynności.', prompt: 'How long ___ they ___ (argue) before someone intervened?', answers: ['had; been arguing', 'had / been arguing'], gapAnswers: [['had', 'been arguing']], tip: 'Użyj had + podmiot + been + czasownika z -ing.' },
+    { level: 'C1', instruction: 'Uzupełnij przeczenie.', prompt: 'I ___ (not / feel) well for several days before I saw a doctor.', answers: ['hadn’t been feeling', 'had not been feeling'], tip: 'Czas trwania złego samopoczucia poprzedzał wizytę.' },
+    { level: 'C1', instruction: 'Uzupełnij zdanie opisujące przyczynę widocznego skutku.', prompt: 'The road was slippery because it ___ (snow) all night.', answers: ['had been snowing'], tip: 'Opady trwały przed momentem, w którym droga była śliska.' },
+    { level: 'C2', instruction: 'Uzupełnij zdanie poprawną formą czasownika.', prompt: 'Before the policy changed, staff ___ (work) longer shifts for nearly a year.', answers: ['had been working'], tip: 'Konstrukcja podkreśla czas trwania wcześniejszej sytuacji.' }
+  ],
+  'future-simple': [
+    { level: 'A2', instruction: 'Uzupełnij spontaniczną decyzję.', prompt: 'The phone is ringing. I ___ (answer) it.', answers: ['will answer', '’ll answer', "'ll answer"], tip: 'Spontaniczną decyzję w chwili mówienia wyrażamy przez will.' },
+    { level: 'B1', instruction: 'Uzupełnij przewidywanie.', prompt: 'I’m sure our team ___ (do) its best in the final.', answers: ['will do'], tip: 'Po will użyj formy podstawowej do.' },
+    { level: 'B1', instruction: 'Uzupełnij przeczenie.', prompt: 'Don’t worry; I ___ (not / tell) anyone.', answers: ['won’t tell', 'will not tell'], tip: 'Obietnicę, że czegoś nie zrobimy, wyrażamy przez won’t.' },
+    { level: 'B2', instruction: 'Uzupełnij pytanie o przyszłość.', prompt: '___ you ___ (join) us for dinner tonight?', answers: ['Will; join', 'Will / join'], gapAnswers: [['Will', 'join']], tip: 'Pytanie zaczyna się od Will, po którym używamy formy podstawowej.' },
+    { level: 'C1', instruction: 'Uzupełnij zdanie przewidujące przyszły fakt.', prompt: 'According to the schedule, the train ___ (arrive) at platform four.', answers: ['will arrive'], tip: 'Po will zawsze występuje podstawowa forma czasownika.' }
+  ],
+  'future-continuous': [
+    { level: 'B1', instruction: 'Uzupełnij zdanie w Future Continuous.', prompt: 'At 9 tomorrow morning, the manager ___ (meet) the new team.', answers: ['will be meeting'], tip: 'Czynność będzie trwała o określonej porze w przyszłości.' },
+    { level: 'B2', instruction: 'Uzupełnij pytanie o czyjeś plany.', prompt: '___ you ___ (stay) at the office late tonight?', answers: ['Will; be staying', 'Will / be staying'], gapAnswers: [['Will', 'be staying']], tip: 'Użyj will + podmiot + be + czasownika z -ing.' },
+    { level: 'B2', instruction: 'Uzupełnij przeczenie.', prompt: 'This time next week, we ___ (not / work); we’ll be on holiday.', answers: ['won’t be working', 'will not be working'], tip: 'Przeczenie: won’t be + czasownik z -ing.' },
+    { level: 'C1', instruction: 'Uzupełnij zdanie opisujące czynność w toku.', prompt: 'The delegates ___ (travel) back home all day on Friday.', answers: ['will be travelling', 'will be traveling'], tip: 'All day on Friday podkreśla trwanie przyszłej czynności.' },
+    { level: 'C2', instruction: 'Uzupełnij uprzejme pytanie o plan.', prompt: '___ Sam ___ (use) the conference room this afternoon?', answers: ['Will; be using', 'Will / be using'], gapAnswers: [['Will', 'be using']], tip: 'Future Continuous może służyć do uprzejmego pytania o plany.' }
+  ],
+  'future-perfect': [
+    { level: 'B2', instruction: 'Uzupełnij zdanie w Future Perfect.', prompt: 'By the end of the month, we ___ (save) enough money.', answers: ['will have saved'], tip: 'Po will have użyj III formy saved.' },
+    { level: 'B2', instruction: 'Uzupełnij pytanie.', prompt: '___ the builders ___ (finish) the bridge by September?', answers: ['Will; have finished', 'Will / have finished'], gapAnswers: [['Will', 'have finished']], tip: 'Pytanie tworzymy przez Will + podmiot + have + III formę.' },
+    { level: 'C1', instruction: 'Uzupełnij przeczenie.', prompt: 'She ___ (not / complete) the course by next spring.', answers: ['won’t have completed', 'will not have completed'], tip: 'Po won’t have użyj III formy completed.' },
+    { level: 'C1', instruction: 'Uzupełnij zdanie odpowiednią formą czasownika nieregularnego.', prompt: 'By the time you arrive, I ___ (write) the first chapter.', answers: ['will have written'], tip: 'III forma czasownika write to written.' },
+    { level: 'C2', instruction: 'Uzupełnij zdanie z określeniem by then.', prompt: 'The committee ___ (make) its final decision by then.', answers: ['will have made'], tip: 'By then wskazuje zakończenie przed przyszłym momentem.' }
+  ],
+  'future-perfect-continuous': [
+    { level: 'C1', instruction: 'Uzupełnij zdanie w Future Perfect Continuous.', prompt: 'By December, I ___ (teach) at this school for five years.', answers: ['will have been teaching'], tip: 'Konstrukcja podkreśla czas trwania pracy do grudnia.' },
+    { level: 'C1', instruction: 'Uzupełnij pytanie o długość trwania czynności.', prompt: 'How long ___ she ___ (run) the business by next year?', answers: ['will; have been running', 'will / have been running'], gapAnswers: [['will', 'have been running']], tip: 'Schemat: will + podmiot + have been + czasownik z -ing.' },
+    { level: 'C1', instruction: 'Uzupełnij przeczenie.', prompt: 'They ___ (not / travel) for very long by the time they reach the coast.', answers: ['won’t have been travelling', 'will not have been travelling', 'won’t have been traveling', 'will not have been traveling'], tip: 'Po won’t have been użyj czasownika z -ing.' },
+    { level: 'C2', instruction: 'Uzupełnij zdanie, zwracając uwagę na długość procesu.', prompt: 'In March, the engineers ___ (develop) the prototype for two years.', answers: ['will have been developing'], tip: 'Czas wskazuje, jak długo proces będzie trwał do marca.' },
+    { level: 'C2', instruction: 'Uzupełnij pytanie o oczekiwany czas trwania.', prompt: 'By midnight, how long ___ the crew ___ (sail)?', answers: ['will; have been sailing', 'will / have been sailing'], gapAnswers: [['will', 'have been sailing']], tip: 'Po How long użyj will + podmiot + have been + -ing.' }
+  ]
+};
+
+ENGLISH_TENSES.forEach((tense) => {
+  tense.exercises.push(...EXTRA_TENSE_EXERCISES[tense.id]);
+});
 
 let data = { decks: [] };
 let supabaseClient = null;
@@ -709,19 +863,45 @@ function openTense(tenseId) {
   $('#tense-lesson').classList.remove('hidden');
   $('#tense-title').textContent = tense.name;
   $('#tense-summary').textContent = tense.summary;
-  $('#tense-theory-content').innerHTML = [
-    ['Kiedy używamy?', tense.theory.use],
-    ['Zdanie twierdzące', tense.theory.affirmative],
-    ['Przeczenie', tense.theory.negative],
-    ['Pytanie', tense.theory.question],
-    ['Typowe określenia czasu', tense.theory.signals],
-    ['Przykłady', tense.theory.example]
-  ].map(([title, content]) => `
-    <article class="tense-theory-card">
-      <h3>${escapeHtml(title)}</h3>
-      <p>${escapeHtml(content)}</p>
-    </article>
-  `).join('');
+  const detailedSections = DETAILED_TENSE_THEORY[tense.id];
+  $('#tense-theory-content').innerHTML = `
+    <section class="tense-theory-overview">
+      <p class="eyebrow">ZASTOSOWANIE</p>
+      <h2>Kiedy używamy ${escapeHtml(tense.name)}?</h2>
+      <p>${escapeHtml(tense.theory.use)}</p>
+      <div class="tense-theory-signals"><strong>Typowe określenia:</strong> ${escapeHtml(tense.theory.signals)}</div>
+    </section>
+    <section class="tense-theory-formulas" aria-label="Budowa zdań">
+      ${[
+        ['Zdanie twierdzące', tense.theory.affirmative],
+        ['Przeczenie', tense.theory.negative],
+        ['Pytanie', tense.theory.question]
+      ].map(([title, content], index) => `
+        <article class="tense-theory-card tense-theory-formula">
+          <span class="tense-theory-step">0${index + 1}</span>
+          <h3>${escapeHtml(title)}</h3>
+          <p>${escapeHtml(content)}</p>
+        </article>
+      `).join('')}
+    </section>
+    <section class="tense-theory-details" aria-label="Szczegółowe wyjaśnienie">
+      <div class="tense-theory-section-heading">
+        <p class="eyebrow">SZCZEGÓŁOWE WYJAŚNIENIE</p>
+        <h2>Jak poprawnie stosować ten czas?</h2>
+      </div>
+      ${detailedSections.map((section, index) => `
+        <article class="tense-theory-card tense-theory-detail">
+          <span class="tense-theory-step">${String(index + 1).padStart(2, '0')}</span>
+          <div><h3>${escapeHtml(section.title)}</h3><p>${escapeHtml(section.text)}</p></div>
+        </article>
+      `).join('')}
+    </section>
+    <section class="tense-theory-example">
+      <p class="eyebrow">PRZYKŁADY</p>
+      <h2>Twierdzenie, przeczenie i pytanie</h2>
+      <p>${escapeHtml(tense.theory.example)}</p>
+    </section>
+  `;
   showView('english-tenses');
   $('#breadcrumb-current').textContent = `Czasy angielskie / ${tense.name}`;
   selectTenseTab('exercises');
@@ -742,6 +922,11 @@ function renderTenseExercises() {
   const tense = ENGLISH_TENSES.find((item) => item.id === activeTenseId);
   if (!tense) return;
   $('#tense-exercise-count').textContent = `${tense.exercises.length} zadań`;
+  $('#tense-exercise-links').innerHTML = tense.exercises.map((exercise, exerciseIndex) => `
+    <button class="tense-exercise-link${exerciseIndex === 0 ? ' active' : ''}" id="tense-exercise-link-${exerciseIndex + 1}" type="button" role="tab" aria-selected="${exerciseIndex === 0}" aria-controls="tense-exercise-${exerciseIndex + 1}" data-select-exercise="${exerciseIndex}" aria-label="Otwórz zadanie ${exerciseIndex + 1}, poziom ${exercise.level}">
+      <span>${exerciseIndex + 1}</span><small>${escapeHtml(exercise.level)}</small>
+    </button>
+  `).join('');
   $('#tense-exercise-list').innerHTML = tense.exercises.map((exercise, exerciseIndex) => {
     let blankIndex = 0;
     const prompt = exercise.prompt.split('___').map((part, partIndex, parts) => {
@@ -757,7 +942,7 @@ function renderTenseExercises() {
       </label>
     `;
     return `
-      <article class="tense-exercise-card" data-exercise-index="${exerciseIndex}">
+      <article class="tense-exercise-card${exerciseIndex === 0 ? '' : ' hidden'}" id="tense-exercise-${exerciseIndex + 1}" data-exercise-index="${exerciseIndex}" role="tabpanel" aria-labelledby="tense-exercise-link-${exerciseIndex + 1}">
         <div class="tense-exercise-meta"><span>Zadanie ${exerciseIndex + 1}</span><span class="level-badge level-${exercise.level.toLowerCase()}">${escapeHtml(exercise.level)}</span></div>
         <p class="tense-exercise-instruction">${escapeHtml(exercise.instruction)}</p>
         <p class="tense-exercise-prompt">${prompt}</p>
@@ -825,19 +1010,17 @@ function checkTenseExercise(exerciseIndex) {
   }
 }
 
-function checkAllTenseExercises() {
+function selectTenseExercise(exerciseIndex) {
   const tense = ENGLISH_TENSES.find((item) => item.id === activeTenseId);
-  if (!tense) return;
-  for (let index = 0; index < tense.exercises.length; index += 1) {
-    const card = $('#tense-exercise-list').querySelector(`[data-exercise-index="${index}"]`);
-    const emptyInput = [...card.querySelectorAll('[data-answer-slot]')].find((input) => !input.value.trim());
-    if (emptyInput) {
-      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      emptyInput.focus();
-      return;
-    }
-  }
-  tense.exercises.forEach((exercise, index) => checkTenseExercise(index));
+  if (!tense || !tense.exercises[exerciseIndex]) return;
+  $('#tense-exercise-links').querySelectorAll('[data-select-exercise]').forEach((button) => {
+    const isSelected = Number(button.dataset.selectExercise) === exerciseIndex;
+    button.classList.toggle('active', isSelected);
+    button.setAttribute('aria-selected', String(isSelected));
+  });
+  $('#tense-exercise-list').querySelectorAll('[data-exercise-index]').forEach((panel) => {
+    panel.classList.toggle('hidden', Number(panel.dataset.exerciseIndex) !== exerciseIndex);
+  });
 }
 
 function showTenseCatalog() {
@@ -1675,7 +1858,11 @@ $('#tense-exercise-list').addEventListener('click', (event) => {
   const button = event.target.closest('[data-check-exercise]');
   if (button) checkTenseExercise(Number(button.dataset.checkExercise));
 });
-$('#tense-check-all').addEventListener('click', checkAllTenseExercises);
+$('#tense-exercise-links').addEventListener('click', (event) => {
+  const button = event.target.closest('[data-select-exercise]');
+  if (!button) return;
+  selectTenseExercise(Number(button.dataset.selectExercise));
+});
 document.querySelectorAll('[data-close]').forEach((button) => {
   button.addEventListener('click', () => document.getElementById(button.dataset.close).close());
 });
