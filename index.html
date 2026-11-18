@@ -219,12 +219,19 @@
             </div>
             <button class="button button-primary tense-mixed-button" id="start-mixed-tense" type="button"><span aria-hidden="true">✦</span> Mieszany quiz</button>
           </div>
-          <div class="tense-dashboard" aria-label="Podsumowanie nauki czasów">
-            <div class="tense-stat"><span class="tense-stat-icon mint">12</span><div><strong>czasy</strong><span>do ćwiczenia</span></div></div>
-            <div class="tense-stat"><span class="tense-stat-icon blue">60</span><div><strong>zadań</strong><span>w każdym czasie</span></div></div>
-            <div class="tense-stat"><span class="tense-stat-icon peach">A1–C2</span><div><strong>6 poziomów</strong><span>od podstaw do zaawansowania</span></div></div>
-            <div class="tense-stat tense-progress-stat"><span class="tense-stat-icon lilac" id="tense-progress-icon">0%</span><div><strong>Twój postęp</strong><span id="tense-progress-copy">0 ukończonych zadań</span></div></div>
-          </div>
+          <section class="tense-overview" aria-label="Podsumowanie nauki czasów">
+            <div class="tense-overview-art" aria-hidden="true"><span>12</span><small>ENGLISH TENSES</small></div>
+            <div class="tense-overview-copy">
+              <p class="eyebrow">JEDEN TEMAT, WIELE MOŻLIWOŚCI</p>
+              <h2>Wybierz czas i zacznij ćwiczyć</h2>
+              <p>12 czasów, sześć poziomów i krótkie zestawy z natychmiastowym sprawdzaniem odpowiedzi.</p>
+              <div class="tense-overview-stats">
+                <span><strong>72</strong><small>zestawy</small></span>
+                <span><strong>720</strong><small>przykładów</small></span>
+                <span class="tense-overview-progress"><strong id="tense-progress-icon">0%</strong><small id="tense-progress-copy">0 ukończonych zadań</small></span>
+              </div>
+            </div>
+          </section>
           <div id="tense-grid" class="tense-grid"></div>
         </div>
         <div id="tense-lesson" class="hidden">
@@ -242,8 +249,8 @@
             <div class="tense-exercise-toolbar">
               <p id="tense-exercise-count" class="tense-exercise-count"></p>
             </div>
-            <div id="tense-exercise-links" class="tense-exercise-links" role="tablist" aria-label="Wybierz zadanie"></div>
-            <div id="tense-exercise-list" class="tense-exercise-list"></div>
+            <div id="tense-exercise-links" class="tense-exercise-links" role="tablist" aria-label="Wybierz poziom trudności"></div>
+            <div id="tense-exercise-list" class="tense-exercise-list" role="tabpanel"></div>
           </div>
           <div id="tense-theory" class="tense-panel hidden" role="tabpanel" aria-labelledby="tense-theory-tab">
             <div id="tense-theory-content" class="tense-theory-content"></div>

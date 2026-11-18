@@ -5,6 +5,7 @@ const CATEGORY_ICONS = {
   Prawo: '§', Inne: '✳'
 };
 const COLOR_CLASSES = ['mint', 'peach', 'lilac', 'blue', 'yellow'];
+const TENSE_ART_MARKS = ['☀', '↗', '✓', '≈', '↶', '◷', '↟', '⌛', '◌', '∿', '▱', '✧'];
 const ENGLISH_TENSES = [
   {
     id: 'present-simple', name: 'Present Simple', short: 'Teraźniejszy prosty',
@@ -539,6 +540,8 @@ const englishTensesView = $('#english-tenses-view');
 const authScreen = $('#auth-screen');
 const appShell = $('#app-shell');
 let activeTenseId = null;
+let activeTenseLevel = TENSE_LEVEL_ORDER[0];
+let activeTenseExerciseFilter = null;
 const TENSE_PROGRESS_KEY = 'szandfiszki-tense-progress';
 let completedTenseExercises = loadTenseProgress();
 
@@ -994,29 +997,39 @@ function renderTenseCatalog() {
   $('#tense-progress-icon').textContent = `${progressPercent}%`;
   $('#tense-progress-copy').textContent = `${completedCount} ukończonych zadań`;
 
-  $('#tense-grid').innerHTML = ENGLISH_TENSES.map((tense, index) => `
-    ${(() => {
-      const tenseDone = tense.exercises.filter((_, exerciseIndex) => completedTenseExercises.has(`${tense.id}:${exerciseIndex}`)).length;
-      const tensePercent = tense.exercises.length ? Math.round((tenseDone / tense.exercises.length) * 100) : 0;
-      const tenseFamily = tense.id.startsWith('present') ? 'present' : tense.id.startsWith('past') ? 'past' : 'future';
-      return `<button class="tense-card ${tenseFamily}" type="button" data-tense-id="${tense.id}">
-      <span class="tense-card-number">${String(index + 1).padStart(2, '0')}</span>
-      <span class="tense-card-copy"><strong>${escapeHtml(tense.name)}</strong><span>${escapeHtml(tense.short)}</span></span>
-      <span class="tense-card-progress" aria-hidden="true"><span style="width:${tensePercent}%"></span></span>
-      <span class="tense-card-progress-copy">${tenseDone}/${tense.exercises.length} ukończonych</span>
-      <span class="tense-card-arrow" aria-hidden="true">→</span>
-    </button>`;
-    })()}
-  `).join('');
+  $('#tense-grid').innerHTML = ENGLISH_TENSES.map((tense, index) => {
+    const tenseDone = tense.exercises.filter((_, exerciseIndex) => completedTenseExercises.has(`${tense.id}:${exerciseIndex}`)).length;
+    const tensePercent = tense.exercises.length ? Math.round((tenseDone / tense.exercises.length) * 100) : 0;
+    const tenseFamily = tense.id.startsWith('present') ? 'present' : tense.id.startsWith('past') ? 'past' : 'future';
+    const setCount = TENSE_LEVEL_ORDER.filter((level) => tense.exercises.some((exercise) => exercise.level === level)).length;
+    return `
+      <button class="tense-card ${tenseFamily}" type="button" data-tense-id="${tense.id}">
+        <span class="tense-card-art" data-tense="${tense.id}" aria-hidden="true"><span>${TENSE_ART_MARKS[index]}</span></span>
+        <span class="tense-card-copy">
+          <strong>${escapeHtml(tense.name)}</strong>
+          <small>${escapeHtml(tense.short)}</small>
+          <span class="tense-card-metrics">
+            <span><strong>${setCount}</strong><small>zestawów</small></span>
+            <span><strong>${tense.exercises.length}</strong><small>przykładów</small></span>
+          </span>
+          <span class="tense-card-progress-copy">${tenseDone}/${tense.exercises.length} ukończonych</span>
+          <span class="tense-card-progress" aria-hidden="true"><span style="width:${tensePercent}%"></span></span>
+        </span>
+      </button>
+    `;
+  }).join('');
   $('#tense-grid').querySelectorAll('[data-tense-id]').forEach((button) => {
     button.addEventListener('click', () => openTense(button.dataset.tenseId));
   });
 }
 
-function openTense(tenseId) {
+function openTense(tenseId, level = TENSE_LEVEL_ORDER[0], exerciseIndex = null) {
   const tense = ENGLISH_TENSES.find((item) => item.id === tenseId);
   if (!tense) return;
   activeTenseId = tense.id;
+  activeTenseLevel = TENSE_LEVEL_ORDER.includes(level) ? level : TENSE_LEVEL_ORDER[0];
+  activeTenseExerciseFilter = Number.isInteger(exerciseIndex)
+    && tense.exercises[exerciseIndex]?.level === activeTenseLevel ? exerciseIndex : null;
   $('#tense-catalog').classList.add('hidden');
   $('#tense-lesson').classList.remove('hidden');
   $('#tense-title').textContent = tense.name;
@@ -1079,50 +1092,52 @@ function selectTenseTab(tab) {
 function renderTenseExercises() {
   const tense = ENGLISH_TENSES.find((item) => item.id === activeTenseId);
   if (!tense) return;
-  $('#tense-exercise-count').textContent = `${tense.exercises.length} zadań · 10 na każdy poziom`;
+  const levelExercises = tense.exercises.map((exercise, index) => ({ exercise, index }))
+    .filter(({ exercise, index }) => exercise.level === activeTenseLevel
+      && (activeTenseExerciseFilter === null || index === activeTenseExerciseFilter));
+  $('#tense-exercise-count').textContent = activeTenseExerciseFilter === null
+    ? `Zestaw ${activeTenseLevel} · ${levelExercises.length} przykładów`
+    : `Quiz mieszany · 1 pytanie · ${activeTenseLevel}`;
   $('#tense-exercise-links').innerHTML = TENSE_LEVEL_ORDER.map((level) => {
-    const levelExercises = tense.exercises.map((exercise, index) => ({ exercise, index }))
-      .filter(({ exercise }) => exercise.level === level);
+    const levelCount = tense.exercises.filter((exercise) => exercise.level === level).length;
     return `
-      <section class="tense-level-group" aria-label="Poziom ${level}">
-        <strong class="tense-level-label">${level}</strong>
-        <div class="tense-level-buttons">
-          ${levelExercises.map(({ exercise, index }, levelIndex) => `
-            <button class="tense-exercise-link${index === 0 ? ' active' : ''}" id="tense-exercise-link-${index + 1}" type="button" role="tab" aria-selected="${index === 0}" aria-controls="tense-exercise-${index + 1}" data-select-exercise="${index}" aria-label="Otwórz zadanie ${levelIndex + 1}, poziom ${exercise.level}">
-              <span>${levelIndex + 1}</span>
-            </button>
-          `).join('')}
-        </div>
-      </section>
+      <button class="tense-level-button${level === activeTenseLevel ? ' active' : ''}" id="tense-level-${level.toLowerCase()}" type="button" role="tab" aria-selected="${level === activeTenseLevel}" aria-controls="tense-exercise-list" data-select-level="${level}">
+        <span>${level}</span><small>${levelCount} zadań</small>
+      </button>
     `;
   }).join('');
-  $('#tense-exercise-list').innerHTML = tense.exercises.map((exercise, exerciseIndex) => {
+  $('#tense-exercise-list').setAttribute('aria-labelledby', `tense-level-${activeTenseLevel.toLowerCase()}`);
+  $('#tense-exercise-list').innerHTML = levelExercises.map(({ exercise, index: exerciseIndex }, questionIndex) => {
     let blankIndex = 0;
     const prompt = exercise.prompt.split('___').map((part, partIndex, parts) => {
       const text = escapeHtml(part);
       if (partIndex === parts.length - 1) return text;
       blankIndex += 1;
-      return `${text}<input class="tense-inline-answer" type="text" data-answer-slot="${blankIndex - 1}" aria-label="Odpowiedź do zadania ${exerciseIndex + 1}, luka ${blankIndex}" autocomplete="off" spellcheck="false">`;
+      return `${text}<input class="tense-inline-answer" type="text" data-answer-slot="${blankIndex - 1}" aria-label="Odpowiedź do zadania ${questionIndex + 1}, luka ${blankIndex}" autocomplete="off" spellcheck="false">`;
     }).join('');
     const answerLine = blankIndex ? '' : `
-      <label class="tense-answer-line" for="tense-answer-${exerciseIndex}">
-        <span>Twoja odpowiedź</span>
-        <input id="tense-answer-${exerciseIndex}" class="tense-inline-answer tense-full-answer" type="text" data-answer-slot="0" autocomplete="off" spellcheck="false">
+      <label class="tense-full-answer-line" for="tense-answer-${exerciseIndex}">
+        <input id="tense-answer-${exerciseIndex}" class="tense-inline-answer tense-full-answer" type="text" data-answer-slot="0" aria-label="Odpowiedź do zadania ${questionIndex + 1}" autocomplete="off" spellcheck="false">
       </label>
     `;
     return `
-      <article class="tense-exercise-card${exerciseIndex === 0 ? '' : ' hidden'}" id="tense-exercise-${exerciseIndex + 1}" data-exercise-index="${exerciseIndex}" role="tabpanel" aria-labelledby="tense-exercise-link-${exerciseIndex + 1}">
-        <div class="tense-exercise-meta"><span>Zadanie ${exerciseIndex + 1}</span><span class="level-badge level-${exercise.level.toLowerCase()}">${escapeHtml(exercise.level)}</span></div>
-        <p class="tense-exercise-instruction">${escapeHtml(exercise.instruction)}</p>
-        <p class="tense-exercise-prompt">${prompt}</p>
-        ${answerLine}
-        <div class="tense-exercise-footer">
-          <button class="button button-light" type="button" data-check-exercise="${exerciseIndex}">Sprawdź</button>
+      <article class="tense-question" data-exercise-index="${exerciseIndex}">
+        <span class="tense-question-number">${questionIndex + 1}.</span>
+        <div class="tense-question-content">
+          <p class="tense-exercise-instruction">${escapeHtml(exercise.instruction)}</p>
+          <p class="tense-exercise-prompt">${prompt}</p>
+          ${answerLine}
           <div class="tense-exercise-feedback hidden" data-exercise-feedback="${exerciseIndex}" role="status" aria-live="polite"></div>
         </div>
       </article>
     `;
   }).join('');
+  $('#tense-exercise-list').insertAdjacentHTML('beforeend', `
+    <div class="tense-check-row">
+      <button class="button button-primary" type="button" data-check-level="${activeTenseLevel}">Sprawdź odpowiedzi <span aria-hidden="true">›</span></button>
+      <p id="tense-level-feedback" class="tense-level-feedback" role="status" aria-live="polite"></p>
+    </div>
+  `);
 }
 
 function normalizeTenseAnswer(answer) {
@@ -1150,20 +1165,22 @@ function getTenseAnswerVariants(exercise) {
   return variants;
 }
 
-function checkTenseExercise(exerciseIndex) {
+function checkTenseExercise(exerciseIndex, allowEmpty = false) {
   const tense = ENGLISH_TENSES.find((item) => item.id === activeTenseId);
   if (!tense) return;
   const exercise = tense.exercises[exerciseIndex];
   const card = $('#tense-exercise-list').querySelector(`[data-exercise-index="${exerciseIndex}"]`);
   if (!exercise || !card) return;
   const answerInputs = [...card.querySelectorAll('[data-answer-slot]')];
-  if (answerInputs.some((input) => !input.value.trim())) {
-    answerInputs.find((input) => !input.value.trim()).focus();
-    return;
+  const emptyInput = answerInputs.find((input) => !input.value.trim());
+  if (emptyInput && !allowEmpty) {
+    emptyInput.focus();
+    return false;
   }
+  const isEmpty = Boolean(emptyInput);
   const answers = answerInputs.map((input) => normalizeTenseAnswer(input.value));
   const variants = getTenseAnswerVariants(exercise);
-  const isCorrect = variants.some((variant) => variant.length === answers.length
+  const isCorrect = !isEmpty && variants.some((variant) => variant.length === answers.length
     && variant.every((part, index) => normalizeTenseAnswer(part) === answers[index]));
   answerInputs.forEach((input) => {
     input.classList.toggle('answer-correct', isCorrect);
@@ -1177,29 +1194,37 @@ function checkTenseExercise(exerciseIndex) {
     feedback.textContent = `Dobrze! ${exercise.tip}`;
   } else {
     const expected = variants[0] || exercise.answers;
-    feedback.textContent = `Poprawna odpowiedź: ${expected.join(' / ')}. ${exercise.tip}`;
+    feedback.textContent = `${isEmpty ? 'Uzupełnij odpowiedź. ' : `Poprawna odpowiedź: ${expected.join(' / ')}. `}${exercise.tip}`;
   }
+  return isCorrect;
 }
 
-function selectTenseExercise(exerciseIndex) {
+function checkTenseLevel(level) {
   const tense = ENGLISH_TENSES.find((item) => item.id === activeTenseId);
-  if (!tense || !tense.exercises[exerciseIndex]) return;
-  $('#tense-exercise-links').querySelectorAll('[data-select-exercise]').forEach((button) => {
-    const isSelected = Number(button.dataset.selectExercise) === exerciseIndex;
-    button.classList.toggle('active', isSelected);
-    button.setAttribute('aria-selected', String(isSelected));
-  });
-  $('#tense-exercise-list').querySelectorAll('[data-exercise-index]').forEach((panel) => {
-    panel.classList.toggle('hidden', Number(panel.dataset.exerciseIndex) !== exerciseIndex);
-  });
+  if (!tense || level !== activeTenseLevel) return;
+  const exercises = tense.exercises.map((exercise, index) => ({ exercise, index }))
+    .filter(({ exercise, index }) => exercise.level === level
+      && (activeTenseExerciseFilter === null || index === activeTenseExerciseFilter));
+  const correctCount = exercises.reduce((count, { index }) => count + Number(checkTenseExercise(index, true)), 0);
+  const feedback = $('#tense-level-feedback');
+  feedback.className = `tense-level-feedback${correctCount === exercises.length ? ' complete' : ''}`;
+  feedback.textContent = `${correctCount} z ${exercises.length} poprawnych odpowiedzi`;
+}
+
+function selectTenseLevel(level) {
+  const hasLevel = ENGLISH_TENSES.some((tense) => tense.id === activeTenseId
+    && tense.exercises.some((exercise) => exercise.level === level));
+  if (!TENSE_LEVEL_ORDER.includes(level) || !hasLevel) return;
+  activeTenseLevel = level;
+  activeTenseExerciseFilter = null;
+  renderTenseExercises();
 }
 
 function startMixedTenseQuiz() {
   const tense = ENGLISH_TENSES[Math.floor(Math.random() * ENGLISH_TENSES.length)];
   const exerciseIndex = Math.floor(Math.random() * tense.exercises.length);
-  openTense(tense.id);
+  openTense(tense.id, tense.exercises[exerciseIndex].level, exerciseIndex);
   selectTenseTab('exercises');
-  selectTenseExercise(exerciseIndex);
   $('#tense-exercise-list').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -2036,13 +2061,12 @@ $('#start-mixed-tense').addEventListener('click', startMixedTenseQuiz);
 $('#tense-exercise-tab').addEventListener('click', () => selectTenseTab('exercises'));
 $('#tense-theory-tab').addEventListener('click', () => selectTenseTab('theory'));
 $('#tense-exercise-list').addEventListener('click', (event) => {
-  const button = event.target.closest('[data-check-exercise]');
-  if (button) checkTenseExercise(Number(button.dataset.checkExercise));
+  const button = event.target.closest('[data-check-level]');
+  if (button) checkTenseLevel(button.dataset.checkLevel);
 });
 $('#tense-exercise-links').addEventListener('click', (event) => {
-  const button = event.target.closest('[data-select-exercise]');
-  if (!button) return;
-  selectTenseExercise(Number(button.dataset.selectExercise));
+  const button = event.target.closest('[data-select-level]');
+  if (button) selectTenseLevel(button.dataset.selectLevel);
 });
 document.querySelectorAll('[data-close]').forEach((button) => {
   button.addEventListener('click', () => document.getElementById(button.dataset.close).close());
