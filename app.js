@@ -539,6 +539,25 @@ const englishTensesView = $('#english-tenses-view');
 const authScreen = $('#auth-screen');
 const appShell = $('#app-shell');
 let activeTenseId = null;
+const TENSE_PROGRESS_KEY = 'szandfiszki-tense-progress';
+let completedTenseExercises = loadTenseProgress();
+
+function loadTenseProgress() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(TENSE_PROGRESS_KEY) || '[]');
+    return new Set(Array.isArray(saved) ? saved : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveTenseProgress() {
+  try {
+    localStorage.setItem(TENSE_PROGRESS_KEY, JSON.stringify([...completedTenseExercises]));
+  } catch {
+    // Postęp nadal działa w bieżącej sesji, gdy przeglądarka blokuje localStorage.
+  }
+}
 
 function setAuthStatus(message, isError = false) {
   const status = $('#auth-status');
@@ -966,12 +985,28 @@ function renderCards(deck) {
 }
 
 function renderTenseCatalog() {
+  const totalExercises = ENGLISH_TENSES.reduce((sum, tense) => sum + tense.exercises.length, 0);
+  const completedCount = [...completedTenseExercises].filter((key) => {
+    const [tenseId] = key.split(':');
+    return ENGLISH_TENSES.some((tense) => tense.id === tenseId);
+  }).length;
+  const progressPercent = totalExercises ? Math.round((completedCount / totalExercises) * 100) : 0;
+  $('#tense-progress-icon').textContent = `${progressPercent}%`;
+  $('#tense-progress-copy').textContent = `${completedCount} ukończonych zadań`;
+
   $('#tense-grid').innerHTML = ENGLISH_TENSES.map((tense, index) => `
-    <button class="tense-card" type="button" data-tense-id="${tense.id}">
+    ${(() => {
+      const tenseDone = tense.exercises.filter((_, exerciseIndex) => completedTenseExercises.has(`${tense.id}:${exerciseIndex}`)).length;
+      const tensePercent = tense.exercises.length ? Math.round((tenseDone / tense.exercises.length) * 100) : 0;
+      const tenseFamily = tense.id.startsWith('present') ? 'present' : tense.id.startsWith('past') ? 'past' : 'future';
+      return `<button class="tense-card ${tenseFamily}" type="button" data-tense-id="${tense.id}">
       <span class="tense-card-number">${String(index + 1).padStart(2, '0')}</span>
       <span class="tense-card-copy"><strong>${escapeHtml(tense.name)}</strong><span>${escapeHtml(tense.short)}</span></span>
+      <span class="tense-card-progress" aria-hidden="true"><span style="width:${tensePercent}%"></span></span>
+      <span class="tense-card-progress-copy">${tenseDone}/${tense.exercises.length} ukończonych</span>
       <span class="tense-card-arrow" aria-hidden="true">→</span>
-    </button>
+    </button>`;
+    })()}
   `).join('');
   $('#tense-grid').querySelectorAll('[data-tense-id]').forEach((button) => {
     button.addEventListener('click', () => openTense(button.dataset.tenseId));
@@ -1137,6 +1172,8 @@ function checkTenseExercise(exerciseIndex) {
   const feedback = card.querySelector(`[data-exercise-feedback="${exerciseIndex}"]`);
   feedback.className = `tense-exercise-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
   if (isCorrect) {
+    completedTenseExercises.add(`${tense.id}:${exerciseIndex}`);
+    saveTenseProgress();
     feedback.textContent = `Dobrze! ${exercise.tip}`;
   } else {
     const expected = variants[0] || exercise.answers;
@@ -1155,6 +1192,15 @@ function selectTenseExercise(exerciseIndex) {
   $('#tense-exercise-list').querySelectorAll('[data-exercise-index]').forEach((panel) => {
     panel.classList.toggle('hidden', Number(panel.dataset.exerciseIndex) !== exerciseIndex);
   });
+}
+
+function startMixedTenseQuiz() {
+  const tense = ENGLISH_TENSES[Math.floor(Math.random() * ENGLISH_TENSES.length)];
+  const exerciseIndex = Math.floor(Math.random() * tense.exercises.length);
+  openTense(tense.id);
+  selectTenseTab('exercises');
+  selectTenseExercise(exerciseIndex);
+  $('#tense-exercise-list').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function showTenseCatalog() {
@@ -1986,6 +2032,7 @@ document.querySelectorAll('.nav-link').forEach((link) => {
   });
 });
 $('#back-to-tenses').addEventListener('click', showTenseCatalog);
+$('#start-mixed-tense').addEventListener('click', startMixedTenseQuiz);
 $('#tense-exercise-tab').addEventListener('click', () => selectTenseTab('exercises'));
 $('#tense-theory-tab').addEventListener('click', () => selectTenseTab('theory'));
 $('#tense-exercise-list').addEventListener('click', (event) => {

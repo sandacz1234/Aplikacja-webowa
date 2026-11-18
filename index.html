@@ -212,9 +212,18 @@
       <section id="english-tenses-view" class="view hidden">
         <div id="tense-catalog">
           <div class="tense-heading">
-            <p class="eyebrow">GRAMATYKA KROK PO KROKU</p>
-            <h1>Czasy angielskie<span class="heading-dot">.</span></h1>
-            <p class="tense-intro">Wybierz czas, poznaj jego budowę i przećwicz go na zadaniach z poziomami A1–C2.</p>
+            <div>
+              <p class="eyebrow">GRAMATYKA KROK PO KROKU</p>
+              <h1>Czasy angielskie<span class="heading-dot">.</span></h1>
+              <p class="tense-intro">Wybierz czas, poznaj jego budowę i przećwicz go na zadaniach z poziomami A1–C2.</p>
+            </div>
+            <button class="button button-primary tense-mixed-button" id="start-mixed-tense" type="button"><span aria-hidden="true">✦</span> Mieszany quiz</button>
+          </div>
+          <div class="tense-dashboard" aria-label="Podsumowanie nauki czasów">
+            <div class="tense-stat"><span class="tense-stat-icon mint">12</span><div><strong>czasy</strong><span>do ćwiczenia</span></div></div>
+            <div class="tense-stat"><span class="tense-stat-icon blue">60</span><div><strong>zadań</strong><span>w każdym czasie</span></div></div>
+            <div class="tense-stat"><span class="tense-stat-icon peach">A1–C2</span><div><strong>6 poziomów</strong><span>od podstaw do zaawansowania</span></div></div>
+            <div class="tense-stat tense-progress-stat"><span class="tense-stat-icon lilac" id="tense-progress-icon">0%</span><div><strong>Twój postęp</strong><span id="tense-progress-copy">0 ukończonych zadań</span></div></div>
           </div>
           <div id="tense-grid" class="tense-grid"></div>
         </div>
